@@ -28,10 +28,11 @@ while True:
 
     response = ChatGPT.prompt(conversation_formatted)
 
-    # SmartSpeaker.play_voice(response)
+    SmartSpeaker.play_voice(response)
 
     conversation_manager.add_paragraph("assistant", response)
 
     conversation_manager.save()
 
 conversation_manager.save(closing=True)
+print_bold("Goodbye!")
