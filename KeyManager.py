@@ -1,9 +1,7 @@
 from FileManager import *
-import json
 
-def load_keys():
-    file = read_text_file("Keys\\sKey")
-    return json.loads(file)
+def load_keys(): 
+    return read_json_file("Keys\\sKey")
 
 def get_GPT_key():
     return load_keys()["GPT_KEY"]

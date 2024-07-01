@@ -8,14 +8,15 @@ from conversation_tools import *
 
 agent = ChatGPTAgent()
 ConversationManager.convo_setup()
+mic = SmartMic()
 
 SmartSpeaker.beep()
 
 while True:
 
-    audio = SmartMic.listen()
+    audio = mic.listen()
 
-    text = SmartMic.interpret_speech(audio)
+    text = mic.interpret_speech(audio)
 
     if check_text(text):
         break
