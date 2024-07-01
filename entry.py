@@ -1,13 +1,15 @@
 from console import *
 from chatGPT import *
 from smartSpeaker import *
+from smart_mic import *
 
 agent = chatGPT_agent()
 
-while True:
-    smart_speaker.play_voice("listening")
+smart_speaker.play_voice("listening")
 
-    audio = "audio_listener"
+while True:
+
+    audio = smart_mic.listen()
 
     text = "speech_to_text"
 
