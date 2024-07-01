@@ -8,6 +8,8 @@ def read_text_file(path):
         print(f"Error: The file at {path} was not found.")
     except IOError:
         print(f"Error: An I/O error occurred while reading the file at {path}.")
+    except Exception as e:
+        print(f"Error occurred in FileManager with read_text_file : {e}")
     return ""
 
 def read_json_file(path):
@@ -24,3 +26,5 @@ def write_json_file(path, content):
             json.dump(content, file, indent=4)
     except IOError:
         print(f"Error: An I/O error occurred while writing JSON to the file at {path}.")
+    except Exception as e:
+        print(f"Error occurred in FileManager with write_json_file : {e}")
