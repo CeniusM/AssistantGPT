@@ -32,5 +32,4 @@ while True:
 
     conversation_manager.save()
 
-
-ConversationManager.save(closing=True)
+conversation_manager.save(closing=True)

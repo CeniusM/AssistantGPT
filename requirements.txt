@@ -1,2 +1,3 @@
-openai
-pygame
+openai==1.35.7
+pygame==2.6.0
+SpeechRecognition==3.10.4
