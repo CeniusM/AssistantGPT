@@ -5,6 +5,9 @@ class smart_speaker:
     def play(sound):
         pass
 
+    def beep():
+        pass
+
     def demo_api_call(text, lang):
         pass
 
