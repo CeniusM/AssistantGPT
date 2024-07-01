@@ -1,6 +1,6 @@
-from key_manager import *
+from KeyManager import *
 
-class chatGPT_agent:
+class ChatGPTAgent:
     def __init__(self):
         self.sKey = get_GPT_key()
     

@@ -1,4 +1,4 @@
-class consoleColor:
+class ConsoleColor:
     RESET = '\033[0m'
     ENDC = '\033[0m'
     HEADER = '\033[95m'
@@ -14,16 +14,16 @@ def color(col: str):
     print(col, end='')
 
 def resetColor():
-    color(consoleColor.RESET)
+    color(ConsoleColor.RESET)
 
 def print_good(msg: str):
-    color(consoleColor.OKGREEN)
+    color(ConsoleColor.OKGREEN)
     print(msg)
 
 def print_error(msg: str):
-    color(consoleColor.FAIL)
+    color(ConsoleColor.FAIL)
     print(msg)
 
 def print_info(msg: str):
-    color(consoleColor.OKBLUE)
+    color(ConsoleColor.OKBLUE)
     print(msg)

@@ -1,4 +1,4 @@
-from file_manager import *
+from FileManager import *
 import json
 
 def load_keys():
