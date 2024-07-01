@@ -4,8 +4,9 @@ from SmartSpeaker import *
 from FileManager import *
 from SmartMic import *
 from ConversationManager import *
+from conversation_tools import *
 
-agent = ChatGPT()
+ConversationManager.convo_setup()
 mic = SmartMic()
 
 SmartSpeaker.beep()
@@ -16,8 +17,16 @@ while True:
 
     text = mic.interpret_speech(audio)
 
+    if check_text(text):
+        break
+
     conversation = ConversationManager.add_and_get(text)
 
-    response = agent.prompt(text)
+    response = ChatGPT.prompt(conversation)
 
     SmartSpeaker.play_voice(response)
+
+    ConversationManager.save()
+
+
+ConversationManager.save(closing=True)
