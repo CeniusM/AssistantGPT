@@ -1,11 +1,11 @@
-from console import *
-from chatGPT_agent import *
-from smart_speaker import *
-from file_manager import *
-from smart_mic import *
+from ConsoleHelper import *
+from ChatGPTAgent import *
+from SmartSpeaker import *
+from FileManager import *
+from SmartMic import *
 from ConversationManager import *
 
-agent = chatGPT_agent()
+agent = ChatGPTAgent()
 
 SmartSpeaker.beep()
 
@@ -15,7 +15,7 @@ while True:
 
     text = SmartMic.interpret_speech(audio)
 
-    conversation = ConversationManager.update_and_get_conversation(text)
+    conversation = ConversationManager.add_and_get(text)
 
     response = agent.prompt(text)
 

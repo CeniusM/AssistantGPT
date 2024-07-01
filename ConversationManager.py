@@ -1,4 +1,4 @@
-class conversation:
+class ConversationManager:
     def __init__(self):
         pass
 
@@ -11,9 +11,9 @@ class conversation:
     def add_paragraph(self, text):
         pass
 
-    def get_as_text(self):
+    def get_conversation(self):
         pass
 
-    def update_and_get_conversation(self, text):
+    def add_and_get(self, text):
         self.add_paragraph(text)
-        return self.get_as_text()
+        return self.get_conversation()
