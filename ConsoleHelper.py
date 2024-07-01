@@ -18,7 +18,7 @@ def print_checked(msg):
         print(msg)
 
 def color(col: str):
-    print_checked(col, end='')
+    print_checked(col)
 
 def resetColor():
     color(ConsoleColor.RESET)

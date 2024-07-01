@@ -6,7 +6,8 @@ from SmartMic import *
 from ConversationManager import *
 from ConversationTools import *
 
-ConversationManager.convo_setup()
+conversation_manager = ConversationManager()
+conversation_manager.convo_setup()
 mic = SmartMic()
 
 SmartSpeaker.beep()
@@ -20,13 +21,16 @@ while True:
     if check_text_for_exit(text):
         break
 
-    conversation = ConversationManager.add_and_get(text)
+    conversation_formatted = conversation_manager.add_and_get("user", text)
 
-    response = ChatGPT.prompt(conversation)
+    response = ChatGPT.prompt(conversation_formatted)
 
-    SmartSpeaker.play_voice(response)
+    # SmartSpeaker.play_voice(response)
+    print(response)
 
-    ConversationManager.save()
+    conversation_manager.add_paragraph("assistent", response)
+
+    conversation_manager.save()
 
 
 ConversationManager.save(closing=True)

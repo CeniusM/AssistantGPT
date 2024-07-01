@@ -49,12 +49,20 @@ class ConversationManager:
         self.conversation.append(formatted_text)
         return self.conversation
 
-    def get_conversation(self):
-        pass
+    def get_conversation_formatted(self):
+        convo = self.conversation.copy()  # Copy the original list to avoid modifying it directly
+        
+        if len(convo) < 2:  # If there are less than 2 elements, no rearrangement is needed
+            return convo
 
-    def add_and_get(self, text):
-        self.add_paragraph(text)
-        return self.get_conversation()
+        header = convo.pop(0)  # Remove the first element (header)
+        convo.insert(len(convo) - 1, header)  # Insert the header before the last element
+        
+        return convo  # Return the modified list
+
+    def add_and_get(self, role, content):
+        self.add_paragraph(role, content)
+        return self.get_conversation_formatted()
     
 if __name__ == "__main__":
     cm = ConversationManager()
