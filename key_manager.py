@@ -1,4 +1,4 @@
-from fileManager import *
+from file_manager import *
 import json
 
 def load_keys():
@@ -10,3 +10,6 @@ def get_GPT_key():
 
 def get_EL_key():
     return load_keys()["EL_Key"]
+
+def load_audio():
+    pass
