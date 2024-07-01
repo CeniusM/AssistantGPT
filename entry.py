@@ -4,7 +4,7 @@ from SmartSpeaker import *
 from FileManager import *
 from SmartMic import *
 from ConversationManager import *
-from conversation_tools import *
+from ConversationTools import *
 
 ConversationManager.convo_setup()
 mic = SmartMic()
@@ -17,7 +17,7 @@ while True:
 
     text = mic.interpret_speech(audio)
 
-    if check_text(text):
+    if check_text_for_exit(text):
         break
 
     conversation = ConversationManager.add_and_get(text)
