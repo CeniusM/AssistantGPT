@@ -1,4 +1,4 @@
-class smart_speaker:    
+class SmartSpeaker:    
     def get_language(text) -> str:
         pass
 
@@ -12,8 +12,8 @@ class smart_speaker:
         pass
 
     def play_voice(text):
-        lang = smart_speaker.get_language(text)
+        lang = SmartSpeaker.get_language(text)
         
-        sound = smart_speaker.demo_api_call(text, lang)
+        sound = SmartSpeaker.demo_api_call(text, lang)
 
-        smart_speaker.play(sound)
+        SmartSpeaker.play(sound)

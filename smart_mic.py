@@ -1,10 +1,13 @@
 
 
-class smart_mic:
+class SmartMic:
     def __init__(self):
         self.microphone = None
 
     def get_microphone(self):
+        pass
+
+    def interpret_speech(self, audio):
         pass
 
     def listen(self):
