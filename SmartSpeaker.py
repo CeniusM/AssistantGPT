@@ -26,7 +26,9 @@ class SmartSpeaker:
             return "da-DK"
         
         return "en-US" 
-    
+
+
+
     def create_audio_file(audio_file):
         # The response's audio_content is binary.
         audio_folder = "Audio files"
@@ -35,15 +37,17 @@ class SmartSpeaker:
             # Write the response to the output file.
             output.write(audio_file)
 
+
+
     def play(audio_file):
-        # initialize the pygame mixer module
-        pygame.mixer.init()
-
-        # load the audio file
-        pygame.mixer.music.load(audio_file)
-
-        # play the audio file
-        pygame.mixer.music.play()
+        pygame.mixer.init()                     # initialize the pygame mixer module
+        pygame.mixer.music.load(audio_file)     # load the audio file
+        
+        pygame.mixer.music.play()               # play the audio file
+        while pygame.mixer.music.get_busy():    # wait for the audio to finish playing
+            pygame.time.Clock().tick(10)        # wait for 10 milliseconds to not hog CPU time 
+            
+        pygame.mixer.quit()                     # quit the mixer
 
     def beep(Hz=440, milliseconds=500):
         winsound.Beep(Hz, milliseconds) # Beep to let you know it reset # Hz , milliseconds
