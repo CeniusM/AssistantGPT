@@ -1,6 +1,6 @@
 from console import *
-from chatGPT import *
-from smartSpeaker import *
+from chatGPT_agent import *
+from smart_speaker import *
 
 agent = chatGPT_agent()
 
