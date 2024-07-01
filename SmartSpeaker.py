@@ -46,7 +46,7 @@ class SmartSpeaker:
         pygame.mixer.music.play()               # play the audio file
         while pygame.mixer.music.get_busy():    # wait for the audio to finish playing
             pygame.time.Clock().tick(10)        # wait for 10 milliseconds to not hog CPU time 
-            
+
         pygame.mixer.quit()                     # quit the mixer
 
     def beep(Hz=440, milliseconds=500):
@@ -58,9 +58,9 @@ class SmartSpeaker:
     def play_voice(text):
         lang = SmartSpeaker.get_language(text)
         
-        sound = SmartSpeaker.demo_api_call(text, lang)
+        audio_path = SmartSpeaker.demo_api_call(text, lang)
 
-        SmartSpeaker.play(sound)
+        SmartSpeaker.play(audio_path)
 
 if __name__ == "__main__":
     SmartSpeaker.play("Audiofiles\\output.wav")
