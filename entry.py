@@ -6,14 +6,15 @@ from SmartMic import *
 from ConversationManager import *
 
 agent = ChatGPTAgent()
+mic = SmartMic()
 
 SmartSpeaker.beep()
 
 while True:
 
-    audio = SmartMic.listen()
+    audio = mic.listen()
 
-    text = SmartMic.interpret_speech(audio)
+    text = mic.interpret_speech(audio)
 
     conversation = ConversationManager.add_and_get(text)
 
