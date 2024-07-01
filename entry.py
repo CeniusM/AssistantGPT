@@ -3,7 +3,7 @@ from chatGPT_agent import *
 from smart_speaker import *
 from file_manager import *
 from smart_mic import *
-from conversation import *
+from ConversationManager import *
 
 agent = chatGPT_agent()
 
@@ -15,7 +15,7 @@ while True:
 
     text = SmartMic.interpret_speech(audio)
 
-    conversation = conversation.update_and_get_conversation(text)
+    conversation = ConversationManager.update_and_get_conversation(text)
 
     response = agent.prompt(text)
 
