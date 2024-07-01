@@ -3,12 +3,14 @@ from FileManager import *
 import time
 
 class ConversationManager:
-    def __init__(self):
-        self.conversation = None
+    def __init__(self, promptname="assistantP.txt"):
+        self.conversation = []
+        self.messages = []
         self.conversation_name = self.conversation_name()
+        self.system_prompt = read_text_file("Prompts\\"+promptname)
 
     def convo_setup(self, *conversation_IDs):
-        self.conversation = []
+        self.conversation.append({"role": "system", "content": self.system_prompt})
         for ID in conversation_IDs:
             convo_path = os.path.join("Conversations\\conversation_"+str(ID)+".json")
             if os.path.exists(convo_path):
@@ -17,11 +19,10 @@ class ConversationManager:
                 print(f"Error: The file at {convo_path} was not found.")
 
         self.save()
-        #return self.conversation
 
         
     def conversation_name(self):
-        conv_foldername = 'conversations'
+        conv_foldername = 'Conversations'
         base_filename = 'conversation'
         suffix = 0
         filename = os.path.join(conv_foldername, f'{base_filename}_{suffix}.json')
