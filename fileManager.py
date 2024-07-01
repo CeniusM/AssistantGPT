@@ -1,4 +1,4 @@
-def readAllText(path: str) -> str:
+def read_text_file(path: str) -> str:
     try:
         with open(path, 'r') as file:
             return file.read()
