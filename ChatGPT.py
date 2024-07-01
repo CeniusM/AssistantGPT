@@ -6,7 +6,7 @@ class ChatGPT:
         openai.api_key = get_GPT_key()
 
         completion = openai.chat.completions.create(
-                model="gpt-3.5-turbo-0613",
+                model="gpt-3.5-turbo-0125",
                 messages= conversation_history,
                 temperature=0.5,
                 presence_penalty=0.5,
