@@ -18,7 +18,8 @@ def print_checked(msg):
         print(msg)
 
 def color(col: str):
-    print_checked(col)
+    if LogEnabled is True:
+        print(col, end='')
 
 def resetColor():
     color(ConsoleColor.RESET)
@@ -32,5 +33,13 @@ def print_error(msg: str):
     print_checked(msg)
 
 def print_info(msg: str):
-    color(ConsoleColor.OKBLUE)
+    color(ConsoleColor.RESET)
+    print_checked(msg)
+
+def print_warning(msg: str):
+    color(ConsoleColor.WARNING)
+    print_checked(msg)
+
+def print_bold(msg: str):
+    color(ConsoleColor.UNDERLINE)
     print_checked(msg)

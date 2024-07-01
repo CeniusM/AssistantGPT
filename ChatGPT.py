@@ -1,3 +1,4 @@
+from ConsoleHelper import *
 from KeyManager import *
 import openai
 
@@ -15,6 +16,6 @@ class ChatGPT:
         
         response = completion.choices[0].message.content
 
-        print(f"\n{response}\n")
+        print_bold(f"\n{response}\n")
 
         return response

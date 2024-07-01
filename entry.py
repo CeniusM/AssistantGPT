@@ -13,10 +13,13 @@ mic = SmartMic()
 SmartSpeaker.beep()
 
 while True:
-
     audio = mic.listen()
 
     text = mic.interpret_speech(audio)
+
+    if text is None:
+        print_warning("Did not get what you said")
+        continue
 
     if check_text_for_exit(text):
         break
@@ -26,9 +29,8 @@ while True:
     response = ChatGPT.prompt(conversation_formatted)
 
     # SmartSpeaker.play_voice(response)
-    print(response)
 
-    conversation_manager.add_paragraph("assistent", response)
+    conversation_manager.add_paragraph("assistant", response)
 
     conversation_manager.save()
 

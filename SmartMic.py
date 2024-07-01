@@ -1,16 +1,17 @@
 import speech_recognition as sr
 from ConsoleHelper import *
+from SmartSpeaker import *
 
 class SmartMic:
     def __init__(self):
         self.recognizer = sr.Recognizer()
         self.mic = sr.Microphone()
 
-    def listen(self, threshold=1, timeout=3):
+        self.adjust_for_ambient_noise()
+
+    def listen(self, threshold=5, timeout=10):
 
         with self.mic as source:
-            print_info("Adjusting for ambient noise, please wait...")
-            self.recognizer.adjust_for_ambient_noise(source)
             print_info("Listening...")
             
             try:
@@ -24,11 +25,20 @@ class SmartMic:
                 print_error("Google Speech Recognition could not understand audio")
             except sr.RequestError as e:
                 print_error(f"Could not request results from Google Speech Recognition service; {e}")
+    
+    def adjust_for_ambient_noise(self):
+        print_info("Adjusting for ambient noise, please wait...")
+        with self.mic as source:
+            self.recognizer.adjust_for_ambient_noise(source)
 
     def record_to_file(self, duration):
         pass
 
     def interpret_speech(self, audio):
-        # Recognize speech using Google Web Speech API
-        text = self.recognizer.recognize_google(audio)
-        print("You said: " + text)
+        try:
+            # Recognize speech using Google Web Speech API
+            speech = self.recognizer.recognize_google(audio)
+            print_bold("You said: " + speech)
+            return speech
+        except:
+            return None
