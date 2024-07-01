@@ -1,11 +1,11 @@
 from ConsoleHelper import *
-from ChatGPTAgent import *
+from ChatGPT import *
 from SmartSpeaker import *
 from FileManager import *
 from SmartMic import *
 from ConversationManager import *
 
-agent = ChatGPTAgent()
+agent = ChatGPT()
 mic = SmartMic()
 
 SmartSpeaker.beep()

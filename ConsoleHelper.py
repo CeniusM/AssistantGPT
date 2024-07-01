@@ -10,20 +10,27 @@ class ConsoleColor:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+LogEnabled = True
+
+# Only prints if logging is enabled
+def print_checked(msg):
+    if LogEnabled is True:
+        print(msg)
+
 def color(col: str):
-    print(col, end='')
+    print_checked(col, end='')
 
 def resetColor():
     color(ConsoleColor.RESET)
 
 def print_good(msg: str):
     color(ConsoleColor.OKGREEN)
-    print(msg)
+    print_checked(msg)
 
 def print_error(msg: str):
     color(ConsoleColor.FAIL)
-    print(msg)
+    print_checked(msg)
 
 def print_info(msg: str):
     color(ConsoleColor.OKBLUE)
-    print(msg)
+    print_checked(msg)
