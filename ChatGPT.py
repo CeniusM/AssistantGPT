@@ -2,6 +2,9 @@ from KeyManager import *
 import openai
 
 class ChatGPT:    
+
+    total_cost = 0
+    
     def prompt(conversation_history):
         openai.api_key = get_GPT_key()
 
@@ -14,7 +17,10 @@ class ChatGPT:
             )
         
         response = completion.choices[0].message.content
-
         print(f"\n{response}\n")
+
+        total_tokens = completion['usage']['total_tokens']
+        cost = round((total_tokens*0.002)/1000, 10)
+        total_cost = round(total_cost + cost, 10)
 
         return response
