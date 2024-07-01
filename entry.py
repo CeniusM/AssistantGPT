@@ -15,7 +15,7 @@ while True:
 
     text = SmartMic.interpret_speech(audio)
 
-    conversation = ConversationManager.update_and_get_conversation(text)
+    conversation = ConversationManager.add_and_get(text)
 
     response = agent.prompt(text)
 

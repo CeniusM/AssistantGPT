@@ -14,6 +14,6 @@ class ConversationManager:
     def get_conversation(self):
         pass
 
-    def add_paragraph_and_get_conversation(self, text):
+    def add_and_get(self, text):
         self.add_paragraph(text)
         return self.get_conversation()
