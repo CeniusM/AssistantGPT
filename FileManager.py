@@ -6,4 +6,6 @@ def read_text_file(path: str) -> str:
         print(f"Error: The file at {path} was not found.")
     except IOError:
         print(f"Error: An I/O error occurred while reading the file at {path}.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
     return ""
