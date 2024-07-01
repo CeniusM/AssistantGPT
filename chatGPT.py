@@ -2,36 +2,10 @@ from keyManager import *
 
 class chatGPT_agent:
     def __init__(self):
-        self.sKey = getKey()
+        self.sKey = get_GPT_key()
     
-    def send_chat(self, msg: str) -> str:
+    def prompt(self, msg):
         pass
 
     def change_language(self):
         pass
-
-class conventationHandler:
-    def get_last_convosation(self):
-        pass
-
-    def safe_convosation(self, convo):
-        pass
-
-class smart_speaker:    
-    def get_language(text) -> str:
-        pass
-
-    def play(sound):
-        pass
-
-    def demo_api_call(text, lang):
-        pass
-
-    def play_voice(text):
-        lang = smart_speaker.get_language(text)
-        
-        sound = smart_speaker.demo_api_call(text, lang)
-
-        smart_speaker.play(sound)
-
-        
