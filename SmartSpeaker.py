@@ -2,40 +2,13 @@ import pygame
 import winsound
 import os
 from google.cloud import texttospeech
+from ConversationTools import *
 
-class SmartSpeaker:    
-#method for finding if the langeuage of the response is danish or english, for the synthesized reader
-    def get_language(text):
-        #list of danish letters
-        danish_letters = ["æ", "ø", "å"]
-        danish_letters_set = set(danish_letters)
-        #list of danish words
-        danish_words = ["hvad", "er", "jeg", "du", "vi", "de", "den", "det", "og", "til", "med", "ikke"]
-        danish_words_set = set(danish_words)
-        #danish_words = ["af", "fordi", "alle", "fra", "kommer", "fri", "kun", "på", "andre", "få", "kunne", "sagde", "at", "gik", "lang", "se", "blev", "glad", "lidt", "selv", "bliver", "godt", "lige", "sidste", "bort", "ham", "lille", "sig", "da", "han", "løb", "sin", "dag", "hans", "man", "sine", "de", "har", "mange", "skal", "dem", "havde", "med", "skulle", "den", "have", "meget", "små", "der", "hele", "men", "som", "deres", "hen", "mere", "stor", "det", "hende", "mig", "store", "dig", "her", "min", "så", "dog", "hjem", "mod", "tid", "du", "hun", "mon", "til", "efter", "hvad", "må", "tog", "eller", "hver", "ned", "ud", "en", "hvis", "nej", "under", "end", "hvor",    "noget", "var", "er", "igen", "nok", "ved", "et", "ikke", "nu", "vi",    "far", "ind", "når", "vil", "fik", "jeg", "og", "ville", "fin", "for", "forbi", "kan"]
-
-        #take set og the response
-        letterset = set(text)
-        #if the response contains any of these letters, it is danish
-        if len(letterset.intersection(danish_letters_set)) > 0:
-            return "da-DK"
-        
-        #take set of the words in the response
-        wordset = set(text.split()) 
-        #if the response contains any of these words, it is danish
-        if len(wordset.intersection(danish_words_set)) > 0:
-            return "da-DK"
-        
-        return "en-US" 
-
-
-
+class SmartSpeaker:
     def create_audio_file(audio_path, audio_file):
         with open(audio_path, "wb") as output:
             # Write the response to the output file.
             output.write(audio_file)
-
-
 
     def play(audio_file):
         pygame.mixer.init()                     # initialize the pygame mixer module
@@ -62,9 +35,9 @@ class SmartSpeaker:
         synthesis_input = texttospeech.SynthesisInput(text=text)
 
         #Set the language of the response
-        language_response = SmartSpeaker.get_language(text)
+        language_response = get_text_language(text)
 
-        # Build the voice request, select the language with get_language and the ssml_gender
+        # Build the voice request, select the language with get_text_language and the ssml_gender
         # voice name depending on language and male boolean
         if male == True:
             if language_response == "en-US":
@@ -98,7 +71,7 @@ class SmartSpeaker:
         return response.audio_content
 
     def play_voice(text):
-        lang = SmartSpeaker.get_language(text)
+        lang = get_text_language(text)
         
         audio_content = SmartSpeaker.generate_speech(text, lang)
 

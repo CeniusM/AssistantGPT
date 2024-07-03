@@ -6,5 +6,7 @@
 
 **/.venv/
 
+Audiofiles/tempAudio.wav
+
 # ignore price data from notes +
 /Notes +/Pricecount.txt/
