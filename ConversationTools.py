@@ -19,10 +19,10 @@ def clean_conversations():
             if element["role"] == "system" or element["role"] == "Time Tracker":
                 convo.remove(element)
             if element["role"] == "Money Tracker":
-                price = int(element["Total Cost"].split("$")[0])
-                #add the price to the pricecount document in notes +
-                total_prize = int(read_text_file("Notes +/pricecount.txt")) + price
-                write_text_file("Notes +/pricecount.txt", str(total_prize))
+                # price = int(element["Total Cost"].split("$")[0])
+                # #add the price to the pricecount document in notes +
+                # total_prize = int(read_text_file("Notes +/pricecount.txt")) + price
+                # write_text_file("Notes +/pricecount.txt", str(total_prize))
                 convo.remove(element)
 
         if len(convo) < 2:
@@ -78,6 +78,6 @@ def get_text_language(text):
 
 
 
-# if __name__ == "__main__":
-#     clean_conversations()
-#     renumber_conversations()
+if __name__ == "__main__":
+    clean_conversations()
+    renumber_conversations()

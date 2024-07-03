@@ -9,4 +9,4 @@
 Audiofiles/tempAudio.wav
 
 # ignore price data from notes +
-/Notes +/Pricecount.txt/
+Notes +/Pricecount.txt/
