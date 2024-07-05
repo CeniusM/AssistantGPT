@@ -21,7 +21,7 @@ class DMI:
         return response.json()
     
 
-    def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 12]) -> dict:
+    def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 24]) -> dict:
 
         if location == None:
             location = DMI.get_location()["accurate_location"]
@@ -73,7 +73,7 @@ class DMI:
                 param_name = tech_parameter_map[parameter]
                 weather_data[param_name] = get_parameter_data(parameter, response.json())
 
-            return weather_data, response
+            return weather_data
 
         else:
             print(f"Error with DMI.api code: {response.status_code}\n", response.text)
@@ -81,39 +81,60 @@ class DMI:
     def create_response(location, api_response):
         pass
     
-    def get_weather(data):
+    def get_weather_info(data):
         pass
 
-    def plot_weather(raw_data):
-        
-        data = raw_data[0]
-        # convert from kelvin to celsius
-        tempatures = data["temperature-2m"]
-        tempatures = [temp - 273.15 for temp in tempatures]
+    def plot_weather(data):
+
+        #label the data
+        tempatures = data["temperature-2m"] # convert from kelvin to celsius
+        tempatures = [round(temp - 273.15, 8) for temp in tempatures]
         rain = data["rain-precipitation-rate"]
+        rain = [rain_rate * 3.600/10 for rain_rate in rain]  # convert from Kg pr. square metres pr. second to mm pr. hour # and then divide by 10 to make the graph look better
+
+        rain2 = [0] * len(rain)
+        for time in range(1, len(rain)):         #make the rain not accumulate
+            rain2[time] = round(rain[time] - rain[time-1], 8)
+
         wind_speed = data["wind-speed"]
         wind_dir = data["wind-dir"]
-        #hour_of_day = [time.hour for time in data["time"]]
+        # get the hour of now to update data
+        hour = int(datetime.now(timezone.utc).hour) + 2  #2 from danish summer time
         time = range(len(tempatures))
+        hours = range(hour+1, hour + len(tempatures)+1)
+        hours = [h % 24 for h in hours]
 
         fig, ax1 = plt.subplots()
         #plot a line graph of the temperature
         color = 'tab:red'
         ax1.set_xlabel('Time (hours)')
+        ax1.set_xticks(time)
+        ax1.set_xticklabels(hours)
         ax1.set_ylabel('Temperature (C)', color=color)
-        ax1.plot(time, tempatures, color=color)
+        ax1.plot(time, tempatures, color=color, linewidth=3)
         ax1.tick_params(axis='y', labelcolor=color)
+
 
         #plot a bar graph of the rain
         ax2 = ax1.twinx()
         color = 'tab:blue'
         ax2.set_ylabel('Rain (mm/h)', color=color)
-        ax2.bar(time, rain, color=color)
-        ax2.tick_params(axis='y', labelcolor=color)      
+        ax2.bar(time, rain2, color=color)
+        ax2.tick_params(axis='y', labelcolor=color)
+
+
+        if max(rain2) < 2:
+            ax2.set_ylim([0, 2])
+            
+        ax1.set_zorder(ax2.get_zorder() + 1)  # put ax1 on top of ax2
+        ax1.patch.set_visible(False)  # hide the 'spines' of ax1
 
         #plot the figure
         fig.tight_layout()
         plt.show()
+
+
+
 
 if __name__ == "__main__":
     response = DMI.api_call_dmi(DMI.create_dependencies())
