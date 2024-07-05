@@ -18,7 +18,7 @@ while True:
     text = mic.interpret_speech(audio)
 
     if text is None:
-        print_warning("Did not get what you said")
+        print_warning("Did not get what you said (no text)")
         continue
 
     if check_text_for_exit(text):
@@ -35,4 +35,4 @@ while True:
     conversation_manager.save()
 
 conversation_manager.save(closing=True)
-print_bold("Goodbye!")
+print_bold("\nGoodbye!\n")

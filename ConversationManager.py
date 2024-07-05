@@ -41,7 +41,7 @@ class ConversationManager:
         if closing:
             #adds on the prize and the date and time at the end of the json file
             self.conversation.append({"role": "Time Tracker", "Time and day": f"{time.asctime(time.localtime(time.time()))}"})
-            #self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
+            self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
         
         write_json_file(path, self.conversation)
 

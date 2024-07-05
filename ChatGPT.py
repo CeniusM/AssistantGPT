@@ -1,7 +1,6 @@
 from ConsoleHelper import *
 from KeyManager import *
 import openai
-import json
 
 class ChatGPT:    
 
@@ -20,9 +19,9 @@ class ChatGPT:
         
         response = completion.choices[0].message.content
         print_bold(f"\n{response}\n")
-
-        #total_tokens = completion['usage']['total_tokens']
-        #cost = round((total_tokens*0.002)/1000, 10)
-        #total_cost = round(total_cost + cost, 10)
+    
+        total_tokens = completion.usage.total_tokens
+        cost = round((total_tokens*0.002)/1000, 10)
+        ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
 
         return response
