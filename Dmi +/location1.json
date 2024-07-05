@@ -1,0 +1,16 @@
+{
+    "status": "success",
+    "country": "Denmark",
+    "countryCode": "DK",
+    "region": "83",
+    "regionName": "South Denmark",
+    "city": "Fredericia",
+    "zip": "7007",
+    "lat": 55.5686,
+    "lon": 9.7525,
+    "timezone": "Europe/Copenhagen",
+    "isp": "TDC Holding A/S",
+    "org": "TDC Holding",
+    "as": "AS3292 TDC Holding A/S",
+    "query": "128.76.174.222"
+}
