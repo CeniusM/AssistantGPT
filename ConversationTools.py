@@ -1,12 +1,30 @@
 import os
 from FileManager import *
+from ConsoleHelper import *
+from SmartMic import *
 
-def check_text_for_exit(text):
+def check_text(text):
+    #check for exit words
     byewords = [" exit", "quit", " goodbye", " farewell"]
     text = " " + text
     if any(word in text for word in byewords):
+        #SET RUNNING TO FALSE, BUT HOW?
         return True
     
+    # #check for empty text
+    # if text == " ":
+    #     print_warning("Did not get what you said (no text)")
+    #     return True
+
+    # check for ambient noise adjustment
+    noise_phrases = ["ambient noise", "background noise", "noise", "støj","støjen", "baggrundsstøj", "baggrundsstøjen" "støjniveau", "støjniveauet", ]
+    adjustment_phrases = ["adjust", "update", "change", "calibrate", "correct", "fix", "set", "reset", "kalibrer", "juster", "opdater", "ændre", "ret", "sæt", "nulstil"]
+    if any(word in text for word in noise_phrases) and any(word in text for word in adjustment_phrases):
+        SmartMic.adjust_for_ambient_noise()
+        print_bold("Adjusted for ambient noise")
+    
+    return False
+
 
 #functions to look trough the conversations and remove any conversations that only contaion 2 or less elements
 def clean_conversations():

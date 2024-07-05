@@ -9,10 +9,11 @@ from ConversationTools import *
 conversation_manager = ConversationManager()
 conversation_manager.convo_setup()
 mic = SmartMic()
+running = True  #MAKE CHECK TEXT CHECK FOR Text == None AND SET RUNNING TO FALSE
 
 SmartSpeaker.beep()
 
-while True:
+while running:
     audio = mic.listen()
 
     text = mic.interpret_speech(audio)
@@ -21,7 +22,7 @@ while True:
         print_warning("Did not get what you said (no text)")
         continue
 
-    if check_text_for_exit(text):
+    if check_text(text): #MAKE THIS FUNCTION CHECK FOR Text == None AND SET RUNNING TO FALSE
         break
 
     conversation_formatted = conversation_manager.add_and_get("user", text)
