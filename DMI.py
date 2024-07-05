@@ -2,7 +2,7 @@ import requests
 from FileManager import *
 import time
 from datetime import datetime, timedelta, timezone
-import csv
+import matplotlib.pyplot as plt
 
 class DMI:
     
@@ -27,7 +27,7 @@ class DMI:
             location = DMI.get_location()["accurate_location"]
 
         if parameters == None:
-            parameters =["temperature-2m", "wind-speed", "wind-dir"] #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
+            parameters =["temperature-2m", "rain-precipitation-rate", "wind-speed", "wind-dir"] #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
         # Format parameters for the API
         parameter_map = read_json_file("Dmi +\\parameter_map.json")
         tech_parameters = [parameter_map[param] for param in parameters]
@@ -72,8 +72,8 @@ class DMI:
             for parameter in response.json()['ranges']:
                 param_name = tech_parameter_map[parameter]
                 weather_data[param_name] = get_parameter_data(parameter, response.json())
-            
-            return weather_data
+
+            return weather_data, response
 
         else:
             print(f"Error with DMI.api code: {response.status_code}\n", response.text)
@@ -81,11 +81,44 @@ class DMI:
     def create_response(location, api_response):
         pass
     
-    def get_weather():
+    def get_weather(data):
         pass
 
+    def plot_weather(raw_data):
+        
+        data = raw_data[0]
+        # convert from kelvin to celsius
+        tempatures = data["temperature-2m"]
+        tempatures = [temp - 273.15 for temp in tempatures]
+        rain = data["rain-precipitation-rate"]
+        wind_speed = data["wind-speed"]
+        wind_dir = data["wind-dir"]
+        #hour_of_day = [time.hour for time in data["time"]]
+        time = range(len(tempatures))
+
+        fig, ax1 = plt.subplots()
+        #plot a line graph of the temperature
+        color = 'tab:red'
+        ax1.set_xlabel('Time (hours)')
+        ax1.set_ylabel('Temperature (C)', color=color)
+        ax1.plot(time, tempatures, color=color)
+        ax1.tick_params(axis='y', labelcolor=color)
+
+        #plot a bar graph of the rain
+        ax2 = ax1.twinx()
+        color = 'tab:blue'
+        ax2.set_ylabel('Rain (mm/h)', color=color)
+        ax2.bar(time, rain, color=color)
+        ax2.tick_params(axis='y', labelcolor=color)      
+
+        #plot the figure
+        fig.tight_layout()
+        plt.show()
 
 if __name__ == "__main__":
     response = DMI.api_call_dmi(DMI.create_dependencies())
+    #write_json_file("Dmi +\\weather.json", response)
+    #response = read_json_file("Dmi +\\weather.json")
+    DMI.plot_weather(response)
 
     
