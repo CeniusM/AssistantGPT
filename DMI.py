@@ -30,7 +30,7 @@ class DMI:
         wind_dir = False
         lightnings = False
         snow = False
-        time = [0, 24]
+        time = [0, 12]
 
         if "lightning" in user_input:
             lightnings = True
@@ -175,12 +175,26 @@ class DMI:
     def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
         weather_convo = ConversationManager(promptname="weather_sort.txt").weather_convo_setup(weather_info_list)
-        wanted_info = ChatGPT.prompt(weather_convo)
+        weather_info = ChatGPT.prompt(weather_convo, silent=True)
 
-        return wanted_info
+        return weather_info
 
-    def create_response(weather_info_list):
-        pass
+
+    def create_response(user_input="temperature, rain, wind"):
+        #create parameters and make api call
+        parameters, time = DMI.get_wanted_parameters(user_input=user_input)
+        dependencies = DMI.create_dependencies(parameters=parameters, times=time)
+        api_data = DMI.api_call_dmi(dependencies)
+
+        #convert the data and get the weather info
+        converted_data = DMI.convert_weather_units(api_data)
+        weather_list = DMI.get_weather_info(converted_data, api_data)
+        filtered_weather_info = DMI.filter_weather_info(weather_list)
+        
+        altered_user_input = user_input+"\n Weather data if needed:"+filtered_weather_info
+        return altered_user_input 
+        
+
     
 
     def plot_weather(data):
@@ -226,11 +240,4 @@ if __name__ == "__main__":
     # write_json_file("Dmi +\\weather.json", api_data)
     # api_data = read_json_file("Dmi +\\weather.json")
     converted_data = DMI.convert_weather_units(api_data)
-    weather_list = DMI.get_weather_info(converted_data, api_data)
-    for element in weather_list:
-        print(element)
     DMI.plot_weather(converted_data)
-    wanted_info = DMI.filter_weather_info(weather_list)
-    print(wanted_info)
-    # DMI.create_response(weather_list)
-    

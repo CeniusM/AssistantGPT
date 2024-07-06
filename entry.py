@@ -22,8 +22,9 @@ while running:
         print_warning("Did not get what you said (no text)")
         continue
 
-    if check_text(text): #MAKE THIS FUNCTION CHECK FOR Text == None AND SET RUNNING TO FALSE
+    if check_text_for_exit(text): #MAKE THIS FUNCTION CHECK FOR Text == None AND SET RUNNING TO FALSE
         break
+    text = check_text(text)
 
     conversation_formatted = conversation_manager.add_and_get("user", text)
 

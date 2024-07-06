@@ -6,7 +6,7 @@ class ChatGPT:
 
     total_cost = 0
     
-    def prompt(conversation_history):
+    def prompt(conversation_history, silent=False):
         openai.api_key = get_GPT_key()
 
         completion = openai.chat.completions.create(
@@ -18,7 +18,8 @@ class ChatGPT:
             )
         
         response = completion.choices[0].message.content
-        print_bold(f"\n{response}\n")
+        if not silent:
+            print_bold(f"\n{response}\n")
     
         total_tokens = completion.usage.total_tokens
         cost = round((total_tokens*0.002)/1000, 10)
