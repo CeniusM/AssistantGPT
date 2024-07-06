@@ -21,6 +21,11 @@ class DMI:
         return response.json()
     
 
+    def get_wanted_parameters(user_input) -> list:
+        # Get the wanted parameters from the user input and filter them with ChatGPT
+        pass
+
+
     def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 24]) -> dict:
 
         if location == None:
@@ -134,7 +139,7 @@ class DMI:
         return weather_info_list
                 
 
-    def create_response(location, api_response):
+    def create_response(weather_info_list):
         pass
     
 
@@ -176,10 +181,12 @@ class DMI:
 
 
 if __name__ == "__main__":
-    # response = DMI.api_call_dmi(DMI.create_dependencies())
-    # write_json_file("Dmi +\\weather.json", response)
-    response = read_json_file("Dmi +\\weather.json")
-    # DMI.get_weather_info(DMI.convert_weather_units(response), response)
-    # DMI.plot_weather(DMI.convert_weather_units(response), response)
+    api_data = DMI.api_call_dmi(DMI.create_dependencies())
+    # write_json_file("Dmi +\\weather.json", api_data)
+    # api_data = read_json_file("Dmi +\\weather.json")
+    converted_data = DMI.convert_weather_units(api_data)
+    print(DMI.get_weather_info(converted_data, api_data))
+    DMI.plot_weather(converted_data)
 
+    # DMI.create_response(DMI.get_weather_info(converted_data, api_data))
     
