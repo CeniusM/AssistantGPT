@@ -1,6 +1,7 @@
-import requests
 from FileManager import *
 from ChatGPT import *
+from ConversationManager import *
+import requests
 from datetime import datetime, timedelta, timezone
 import matplotlib.pyplot as plt
 
@@ -21,9 +22,42 @@ class DMI:
         return response.json()
     
 
-    def get_wanted_parameters(user_input) -> list:
+    def get_wanted_parameters(user_input = "") -> list:
         # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
-        pass
+        rain = True
+        temperature = True
+        wind_speed = True
+        wind_dir = False
+        lightnings = False
+        snow = False
+        time = [0, 24]
+
+        if "lightning" in user_input:
+            lightnings = True
+        if "snow" in user_input or datetime.now().month in [11, 12, 1, 2, 3]: 
+            snow = True
+        if "wind" in user_input:
+            wind_speed = True
+            wind_dir = True
+
+        #improve to make the sorting ai-based and include location and time 
+
+        parameters = []
+
+        if rain:
+            parameters.append("rain-precipitation-rate")
+        if temperature:
+            parameters.append("temperature-2m")
+        if wind_speed:
+            parameters.append("wind-speed")
+        if wind_dir:
+            parameters.append("wind-dir")
+        if lightnings:
+            parameters.append("probability-of-lightning")
+        if snow:
+            parameters.append("total-snowfall-rate-water-equivalent")
+
+        return parameters, time
 
 
     def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 24]) -> dict:
@@ -101,10 +135,10 @@ class DMI:
         hours = range(hour+1, hour + len(tempatures)+1)
         hours = [h % 24 for h in hours]
 
-        return tempatures, rain, hours
+        return tempatures, rain, hour, hours
 
     def get_weather_info(converted_data, weather_data):
-        tempatures, rain, hours = converted_data
+        tempatures, rain, hour, hours = converted_data
         cleaned_data = {"temperature": (tempatures, "C"), "rain": (rain, "mm/h")}
         unit_map = read_json_file("Dmi +\\parameter_unit_map.json")
 
@@ -117,9 +151,9 @@ class DMI:
             name = element
             values = cleaned_data[element][0]
             max_value = max(values)
-            max_time = values.index(max_value)
+            max_time = values.index(max_value) + hour
             min_value = min(values)
-            min_time = values.index(min_value)
+            min_time = values.index(min_value) + hour
             avg_value = round(sum(values)/len(values), 8)
             unit = cleaned_data[element][1]
             weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
@@ -129,15 +163,21 @@ class DMI:
                 name = element
                 values = weather_data[element]
                 max_value = max(values)
-                max_time = values.index(max_value)
+                max_time = values.index(max_value) + hour
                 min_value = min(values)
-                min_time = values.index(min_value)
+                min_time = values.index(min_value) + hour
                 avg_value = round(sum(values)/len(values), 8)
                 unit = unit_map[element]
                 weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
 
         return weather_info_list
                 
+    def filter_weather_info(weather_info_list):
+        #create a list of the wanted weather info using chatGPT
+        weather_convo = ConversationManager(promptname="weather_sort.txt").weather_convo_setup(weather_info_list)
+        wanted_info = ChatGPT.prompt(weather_convo)
+
+        return wanted_info
 
     def create_response(weather_info_list):
         pass
@@ -145,13 +185,13 @@ class DMI:
 
     def plot_weather(data):
 
-        tempatures, rain, hours = data
+        tempatures, rain, hour, hours = data
         time = range(len(tempatures))
 
         fig, ax1 = plt.subplots()
         #plot a line graph of the temperature
         color = 'tab:red'
-        ax1.set_xlabel('Time (hours)')
+        ax1.set_xlabel('Time (hour)')
         ax1.set_xticks(time)
         ax1.set_xticklabels(hours)
         ax1.set_ylabel('Temperature (C)', color=color)
@@ -181,7 +221,8 @@ class DMI:
 
 
 if __name__ == "__main__":
-    api_data = DMI.api_call_dmi(DMI.create_dependencies())
+    parameters, time = DMI.get_wanted_parameters("temperature, rain, wind")
+    api_data = DMI.api_call_dmi(DMI.create_dependencies(parameters=parameters, times=time))
     # write_json_file("Dmi +\\weather.json", api_data)
     # api_data = read_json_file("Dmi +\\weather.json")
     converted_data = DMI.convert_weather_units(api_data)
@@ -189,6 +230,7 @@ if __name__ == "__main__":
     for element in weather_list:
         print(element)
     DMI.plot_weather(converted_data)
-
+    wanted_info = DMI.filter_weather_info(weather_list)
+    print(wanted_info)
     # DMI.create_response(weather_list)
     

@@ -10,6 +10,11 @@ class ConversationManager:
         self.conversation_name = self.conversation_name()
         self.system_prompt = read_text_file("Prompts\\"+promptname)
 
+    def weather_convo_setup(self, weather_data):
+        self.conversation.append({"role": "system", "content": self.system_prompt})
+        self.conversation.append({"role": "user", "content": str(weather_data)})
+        return self.conversation
+
     def convo_setup(self, *conversation_IDs):
         self.conversation.append({"role": "system", "content": self.system_prompt})
         for ID in conversation_IDs:
