@@ -78,31 +78,70 @@ class DMI:
         else:
             print(f"Error with DMI.api code: {response.status_code}\n", response.text)
 
-    def create_response(location, api_response):
-        pass
-    
-    def get_weather_info(data):
-        pass
-
-    def plot_weather(data):
-
+    def convert_weather_units(data):
+        
         #label the data
         tempatures = data["temperature-2m"] # convert from kelvin to celsius
         tempatures = [round(temp - 273.15, 8) for temp in tempatures]
-        rain = data["rain-precipitation-rate"]
-        rain = [rain_rate * 3.600/10 for rain_rate in rain]  # convert from Kg pr. square metres pr. second to mm pr. hour # and then divide by 10 to make the graph look better
+        
+        rain_acc = data["rain-precipitation-rate"]
+        rain_acc = [rain_rate * 3.600/10 for rain_rate in rain_acc]  # convert from Kg pr. square metres pr. second to mm pr. hour # and then divide by 10 to make the graph look better
 
-        rain2 = [0] * len(rain)
-        for time in range(1, len(rain)):         #make the rain not accumulate
-            rain2[time] = round(rain[time] - rain[time-1], 8)
+        rain = [0] * len(rain_acc)
+        for time in range(1, len(rain_acc)):         #make the rain not accumulate
+            rain[time] = round(rain_acc[time] - rain_acc[time-1], 8)
 
-        wind_speed = data["wind-speed"]
-        wind_dir = data["wind-dir"]
         # get the hour of now to update data
         hour = int(datetime.now(timezone.utc).hour) + 2  #2 from danish summer time
-        time = range(len(tempatures))
         hours = range(hour+1, hour + len(tempatures)+1)
         hours = [h % 24 for h in hours]
+
+        return tempatures, rain, hours
+
+    def get_weather_info(converted_data, weather_data):
+        tempatures, rain, hours = converted_data
+        cleaned_data = {"temperature": (tempatures, "C"), "rain": (rain, "mm/h")}
+        unit_map = read_json_file("Dmi +\\parameter_unit_map.json")
+
+        #go through the data and get the weather info
+        # {name: [{max: (value, time)}, {min: (value, time)}, {avg: value}, unit]}
+
+        weather_info_list = [{"name": [{"max": ("value", "time")}, {"min": ("value", "time")}, {"avg": "value"}, "unit"]}]
+
+        for element in cleaned_data.keys():
+            name = element
+            values = cleaned_data[element][0]
+            max_value = max(values)
+            max_time = values.index(max_value)
+            min_value = min(values)
+            min_time = values.index(min_value)
+            avg_value = sum(values)/len(values)
+            unit = cleaned_data[element][1]
+            weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
+        
+        for element in weather_data.keys():
+            if element != "temperature-2m" and element != "rain-precipitation-rate":
+                name = element
+                values = weather_data[element]
+                max_value = max(values)
+                max_time = values.index(max_value)
+                min_value = min(values)
+                min_time = values.index(min_value)
+                avg_value = sum(values)/len(values)
+                unit = unit_map[element]
+                weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
+
+        return weather_info_list
+                
+
+    def create_response(location, api_response):
+        pass
+    
+
+    def plot_weather(data):
+
+        tempatures, rain, hours = data
+        time = range(len(tempatures))
 
         fig, ax1 = plt.subplots()
         #plot a line graph of the temperature
@@ -119,11 +158,11 @@ class DMI:
         ax2 = ax1.twinx()
         color = 'tab:blue'
         ax2.set_ylabel('Rain (mm/h)', color=color)
-        ax2.bar(time, rain2, color=color)
+        ax2.bar(time, rain, color=color)
         ax2.tick_params(axis='y', labelcolor=color)
 
 
-        if max(rain2) < 2:
+        if max(rain) < 2:
             ax2.set_ylim([0, 2])
             
         ax1.set_zorder(ax2.get_zorder() + 1)  # put ax1 on top of ax2
@@ -137,9 +176,10 @@ class DMI:
 
 
 if __name__ == "__main__":
-    response = DMI.api_call_dmi(DMI.create_dependencies())
-    #write_json_file("Dmi +\\weather.json", response)
-    #response = read_json_file("Dmi +\\weather.json")
-    DMI.plot_weather(response)
+    # response = DMI.api_call_dmi(DMI.create_dependencies())
+    # write_json_file("Dmi +\\weather.json", response)
+    response = read_json_file("Dmi +\\weather.json")
+    # DMI.get_weather_info(DMI.convert_weather_units(response), response)
+    # DMI.plot_weather(DMI.convert_weather_units(response), response)
 
     
