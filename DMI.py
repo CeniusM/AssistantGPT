@@ -1,6 +1,6 @@
 import requests
 from FileManager import *
-import time
+from ChatGPT import *
 from datetime import datetime, timedelta, timezone
 import matplotlib.pyplot as plt
 
@@ -22,7 +22,7 @@ class DMI:
     
 
     def get_wanted_parameters(user_input) -> list:
-        # Get the wanted parameters from the user input and filter them with ChatGPT
+        # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
         pass
 
 
@@ -120,7 +120,7 @@ class DMI:
             max_time = values.index(max_value)
             min_value = min(values)
             min_time = values.index(min_value)
-            avg_value = sum(values)/len(values)
+            avg_value = round(sum(values)/len(values), 8)
             unit = cleaned_data[element][1]
             weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
         
@@ -132,7 +132,7 @@ class DMI:
                 max_time = values.index(max_value)
                 min_value = min(values)
                 min_time = values.index(min_value)
-                avg_value = sum(values)/len(values)
+                avg_value = round(sum(values)/len(values), 8)
                 unit = unit_map[element]
                 weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
 
@@ -185,8 +185,10 @@ if __name__ == "__main__":
     # write_json_file("Dmi +\\weather.json", api_data)
     # api_data = read_json_file("Dmi +\\weather.json")
     converted_data = DMI.convert_weather_units(api_data)
-    print(DMI.get_weather_info(converted_data, api_data))
+    weather_list = DMI.get_weather_info(converted_data, api_data)
+    for element in weather_list:
+        print(element)
     DMI.plot_weather(converted_data)
 
-    # DMI.create_response(DMI.get_weather_info(converted_data, api_data))
+    # DMI.create_response(weather_list)
     
