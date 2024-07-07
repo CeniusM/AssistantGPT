@@ -9,5 +9,8 @@ def get_GPT_key():
 def get_EL_key():
     return load_keys()["EL_KEY"]
 
+def get_DMI_key():
+    return load_keys()["DMI_KEY"]
+
 def load_audio():
     pass

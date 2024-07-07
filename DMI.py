@@ -1,6 +1,7 @@
 from FileManager import *
 from ChatGPT import *
 from ConversationManager import *
+from KeyManager import *
 import requests
 from datetime import datetime, timedelta, timezone
 import matplotlib.pyplot as plt
@@ -79,7 +80,7 @@ class DMI:
         start_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         end_time = future.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-        api_key = read_json_file("Keys\\sKey")["DMI_KEY"]        
+        api_key = get_DMI_key()      
 
         dependencies = {        
             "coords": f"POINT({location[1]} {location[0]})",
@@ -191,7 +192,7 @@ class DMI:
         weather_list = DMI.get_weather_info(converted_data, api_data)
         filtered_weather_info = DMI.filter_weather_info(weather_list)
         
-        altered_user_input = user_input+"\n Weather data if needed:"+filtered_weather_info
+        altered_user_input = user_input+"\n All the weather data available, if needed:"+filtered_weather_info
         return altered_user_input 
         
 
