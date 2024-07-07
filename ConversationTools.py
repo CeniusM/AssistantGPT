@@ -1,3 +1,4 @@
+import re
 import os
 from FileManager import *
 from ConsoleHelper import *
@@ -70,7 +71,13 @@ def clean_conversations():
 def renumber_conversations():
     current_num = 0
     print("Renumbering conversations")
-    for filename in os.listdir("Conversations"):
+
+    # Function to extract the numeric part from the filename #made by chatgpt
+    def extract_number(filename):
+        match = re.search(r'(\d+)', filename)
+        return int(match.group(0)) if match else 0
+
+    for filename in sorted(os.listdir("Conversations"), key=extract_number): #breaks for more than 9 conversations 10<2
 
         filenum = int(filename.split("_")[1].split(".")[0])
         if filenum == current_num:
