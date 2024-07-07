@@ -1,0 +1,2 @@
+You are given a user input with some form of search query. Extract that query and format it so it can be used for a google search.
+Respond ONLY with the search query. 
