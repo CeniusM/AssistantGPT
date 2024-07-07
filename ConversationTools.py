@@ -5,50 +5,65 @@ from ConsoleHelper import *
 from SmartMic import *
 from DMI import *
 
+
 def check_text(text):
     
-    
-    check_text_for_ambient_noise(text)
+    if check_text_for_ambient_noise(text):
+        SmartMic.adjust_for_ambient_noise()
+        print_bold("Adjusted for ambient noise")
 
     #if check_text_for_empty(text):
         #return continue
 
+    if check_text_for_web_search(text):
+        print_bold("Searching.")
+        #text = WebSearch.create_response(text)
+
+
     if check_text_for_weather(text):
         print_bold("Getting weather data")
         text = DMI.create_response(text)
-        return text
 
     return text
 
 
+def word_in_text(text, words):
+    text = " " + text
+    words = [" "+word.lower() for word in words]
+    return any(word in text for word in words)
+
+
+
 def check_text_for_exit(text):
     #check for exit words
-    byewords = [" exit", "quit", " goodbye", " farewell"]
-    text = " " + text
-    if any(word in text for word in byewords):
+    byewords = ["exit", "quit", "goodbye", "farewell"]
+    if word_in_text(text, byewords):
+        print_bold("\nGoodbye!\n")
         return True
-    return False
 
 def check_text_for_ambient_noise(text):
     noise_phrases = ["ambient noise", "background noise", "noise", "støj","støjen", "baggrundsstøj", "baggrundsstøjen" "støjniveau", "støjniveauet", ]
     adjustment_phrases = ["adjust", "update", "change", "calibrate", "correct", "fix", "set", "reset", "kalibrer", "juster", "opdater", "ændre", "ret", "sæt", "nulstil"]
-    if any(word in text for word in noise_phrases) and any(word in text for word in adjustment_phrases):
-        SmartMic.adjust_for_ambient_noise()
-        print_bold("Adjusted for ambient noise")
-        return True
-    return False
+    return word_in_text(text, noise_phrases) and word_in_text(text, adjustment_phrases)
+
 
 def check_text_for_empty(text):
-    if text == " ":
+    if text == " " or text == "":
         print_warning("Did not get what you said (no text)")
         return True
     return False
 
 def check_text_for_weather(text):
     weather_phrases = ["weather", "vejret", "forecast", "prognose", "temperature", "temperatur", "rain", "regn", "wind", "vind", "cloud", "sky", "lightning", "lyn", "snow", "sne", "thunder", "torden", "storm"]
-    if any(word in text for word in weather_phrases):
-        return True
-    return False
+    return word_in_text(text, weather_phrases)
+
+
+def check_text_for_web_search(text):
+    search_phrases = ["search", "google", "look up", "søg", "slå op", "check internet", "check the internet", "check online", "check the web" ]
+    return word_in_text(text, search_phrases)
+
+
+
 
 #functions to look trough the conversations and remove any conversations that only contaion 2 or less elements
 def clean_conversations():
@@ -93,17 +108,15 @@ def renumber_conversations():
     print("Renumbered all conversations")
 
 
+
 #method for finding if the langeuage of the response is danish or english, for the synthesized reader
 def get_text_language(text):
     danish_letters_set = set(["æ", "ø", "å"])
     danish_words_set = set(["hvad", "er", "jeg", "du", "vi", "de", "den", "det", "og", "til", "med", "ikke"])
     
-    #if the response contains any of these letters, it is danish
-    if len(set(text).intersection(danish_letters_set)) > 0:
-        return "da-DK"
-
-    #if the response contains any of these words, it is danish
-    if len(set(text.split()).intersection(danish_words_set)) > 0:
+    if len(set(text).intersection(danish_letters_set)) > 0: #if the response contains any of these letters, it is danish
+        return "da-DK"   
+    if len(set(text.split()).intersection(danish_words_set)) > 0:  #if the response contains any of these words, it is danish
         return "da-DK"
     
     return "en-US"

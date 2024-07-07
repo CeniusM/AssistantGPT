@@ -7,6 +7,21 @@ from datetime import datetime, timedelta, timezone
 import matplotlib.pyplot as plt
 
 class DMI:
+
+
+    def create_response(user_input="temperature, rain, wind"):
+        #create parameters and make api call
+        parameters, time = DMI.get_wanted_parameters(user_input=user_input)
+        dependencies = DMI.create_dependencies(parameters=parameters, times=time)
+        api_data = DMI.api_call_dmi(dependencies)
+
+        #convert the data and get the weather info
+        converted_data = DMI.convert_weather_units(api_data)
+        weather_list = DMI.get_weather_info(converted_data, api_data)
+        filtered_weather_info = DMI.filter_weather_info(weather_list)
+        
+        altered_user_input = user_input+"\n All the weather data available, if needed:"+filtered_weather_info
+        return altered_user_input 
     
 
     def get_location():
@@ -121,8 +136,8 @@ class DMI:
     def convert_weather_units(data):
         
         #label the data
-        tempatures = data["temperature-2m"] # convert from kelvin to celsius
-        tempatures = [round(temp - 273.15, 8) for temp in tempatures]
+        temperatures = data["temperature-2m"] # convert from kelvin to celsius
+        temperatures = [round(temp - 273.15, 8) for temp in temperatures]
         
         rain_acc = data["rain-precipitation-rate"]
         rain_acc = [rain_rate * 3.600/10 for rain_rate in rain_acc]  # convert from Kg pr. square metres pr. second to mm pr. hour # and then divide by 10 to make the graph look better
@@ -133,14 +148,14 @@ class DMI:
 
         # get the hour of now to update data
         hour = int(datetime.now(timezone.utc).hour) + 2  #2 from danish summer time
-        hours = range(hour+1, hour + len(tempatures)+1)
+        hours = range(hour+1, hour + len(temperatures)+1)
         hours = [h % 24 for h in hours]
 
-        return tempatures, rain, hour, hours
+        return temperatures, rain, hour, hours
 
     def get_weather_info(converted_data, weather_data):
-        tempatures, rain, hour, hours = converted_data
-        cleaned_data = {"temperature": (tempatures, "C"), "rain": (rain, "mm/h")}
+        temperatures, rain, hour, hours = converted_data
+        cleaned_data = {"temperature": (temperatures, "C"), "rain": (rain, "mm/h")}
         unit_map = read_json_file("Dmi +\\parameter_unit_map.json")
 
         #go through the data and get the weather info
@@ -175,33 +190,18 @@ class DMI:
                 
     def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
-        weather_convo = ConversationManager(promptname="weather_sort.txt").weather_convo_setup(weather_info_list)
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo, silent=True)
 
         return weather_info
-
-
-    def create_response(user_input="temperature, rain, wind"):
-        #create parameters and make api call
-        parameters, time = DMI.get_wanted_parameters(user_input=user_input)
-        dependencies = DMI.create_dependencies(parameters=parameters, times=time)
-        api_data = DMI.api_call_dmi(dependencies)
-
-        #convert the data and get the weather info
-        converted_data = DMI.convert_weather_units(api_data)
-        weather_list = DMI.get_weather_info(converted_data, api_data)
-        filtered_weather_info = DMI.filter_weather_info(weather_list)
-        
-        altered_user_input = user_input+"\n All the weather data available, if needed:"+filtered_weather_info
-        return altered_user_input 
         
 
     
 
     def plot_weather(data):
 
-        tempatures, rain, hour, hours = data
-        time = range(len(tempatures))
+        temperatures, rain, hour, hours = data
+        time = range(len(temperatures))
 
         fig, ax1 = plt.subplots()
         #plot a line graph of the temperature
@@ -210,7 +210,7 @@ class DMI:
         ax1.set_xticks(time)
         ax1.set_xticklabels(hours)
         ax1.set_ylabel('Temperature (C)', color=color)
-        ax1.plot(time, tempatures, color=color, linewidth=3)
+        ax1.plot(time, temperatures, color=color, linewidth=3)
         ax1.tick_params(axis='y', labelcolor=color)
 
 
