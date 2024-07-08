@@ -108,6 +108,43 @@ def renumber_conversations():
     print("Renumbered all conversations")
 
 
+def summarize_conversations():
+
+    convnum = 0
+    convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
+
+    while os.path.exists(convpath):
+
+        conversation = read_json_file(convpath)
+        pop_list = []
+        
+        while True:
+            conv_obj = conversation.pop()
+            pop_list.append(conv_obj)
+            role = conv_obj["role"]
+
+            if role == "summary":
+                break
+            elif role in ["Money Tracker", "Time Tracker"]:
+                continue
+            else:
+                pop_list.reverse()
+                conversation.append(pop_list[0])
+                pop_list.pop(0)
+                summary = ConversationManager.create_summary(conversation)
+                conversation.append({"role": "summary", "content": f"{summary}"})
+                while len(pop_list) > 0:
+                    conversation.append(pop_list[0])
+                    pop_list.pop(0)
+                # write_json_file(convpath, conversation)
+                break
+
+
+            
+
+        convnum += 1
+        convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
+
 
 #method for finding if the langeuage of the response is danish or english, for the synthesized reader
 def get_text_language(text):
@@ -123,5 +160,6 @@ def get_text_language(text):
 
 
 if __name__ == "__main__" and True:
-    clean_conversations()
-    renumber_conversations()
+    # clean_conversations()
+    # renumber_conversations()
+    summarize_conversations()

@@ -26,7 +26,6 @@ class ConversationManager:
 
         self.save()
 
-        
     def conversation_name(self):
         conv_foldername = 'Conversations'
         base_filename = 'conversation'
@@ -44,11 +43,23 @@ class ConversationManager:
         path = self.conversation_name
 
         if closing:
+
+            summary = self.create_summary(self.conversation)
+            self.conversation.append({"role": "summary", "content": f"{summary}"})
+            print(f"Summary: {summary}")
+
             #adds on the prize and the date and time at the end of the json file
             self.conversation.append({"role": "Time Tracker", "Time and day": f"{time.asctime(time.localtime(time.time()))}"})
             self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
         
         write_json_file(path, self.conversation)
+
+    def create_summary(conversation):
+    #Make the summarytext from the conversation
+        conversation.pop(0)
+        conversation.append({"role": "system", "content":"make a super breaf summary of what this converation was about. Use at max 1-2 short sentences"})
+        summary = ChatGPT.prompt(conversation)
+        return summary
 
     def add_paragraph(self, role, content:str):
         formatted_text = {"role": role, "content": content}       
@@ -70,7 +81,3 @@ class ConversationManager:
         self.add_paragraph(role, content)
         return self.get_conversation_formatted()
     
-if __name__ == "__main__":
-    cm = ConversationManager()
-    cm.convo_setup(2)
-    cm.save(closing=True)

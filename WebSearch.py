@@ -3,7 +3,7 @@ from ConversationManager import *
 
 class WebSearch:
         
-    def create_response(user_input="search the web to figure out the age of dolphins"):
+    def create_response(user_input="search the web to figure out how old dolphins can get"):
         #create parameters and make api call
         search_query = WebSearch.create_search_query(user_input=user_input)
         dependencies = WebSearch.create_dependencies()
@@ -20,9 +20,9 @@ class WebSearch:
     def create_search_query(user_input):
         #create the wanted search info using chatGPT
         search_query_convo = ConversationManager(promptname="search_query.txt").api_convo_setup(user_input)
-        search_query = ChatGPT.prompt(search_query_convo, silent=True)
+        search_query = ChatGPT.prompt(search_query_convo, silent=True, temperature=0.2)
         return search_query
 
 
 if __name__ == "__main__":
-    print(WebSearch.create_search_query("search the web to figure out the age of dolphins"))
+    print(WebSearch.create_search_query("search the web to figure out how old dolphins can get"))

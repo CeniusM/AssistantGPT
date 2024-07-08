@@ -1,2 +1,4 @@
-You are given a user input with some form of search query. Extract that query and format it so it can be used for a google search.
+You are given a user input with some form of search query. Based on it create a query that can be used for a google search.
 Respond ONLY with the search query. 
+If more than one query is neccesary output a list like ( ["birth rate denmark", "most expense painting"] ) 
+

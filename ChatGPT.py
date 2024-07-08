@@ -6,13 +6,14 @@ class ChatGPT:
 
     total_cost = 0
     
-    def prompt(conversation_history, silent=False):
+    def prompt(conversation_history, temperature=0.6, silent=False):
         openai.api_key = get_GPT_key()
+        temperature = temperature
 
         completion = openai.chat.completions.create(
                 model="gpt-3.5-turbo-0125",
                 messages= conversation_history,
-                temperature=0.5,
+                temperature=temperature,
                 presence_penalty=0.5,
                 frequency_penalty=0.5,
             )
