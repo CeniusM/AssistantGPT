@@ -116,32 +116,20 @@ def summarize_conversations():
     while os.path.exists(convpath):
 
         conversation = read_json_file(convpath)
-        pop_list = []
         
         while True:
             conv_obj = conversation.pop()
-            pop_list.append(conv_obj)
             role = conv_obj["role"]
 
             if role == "summary":
                 break
-            elif role in ["Money Tracker", "Time Tracker"]:
-                continue
             else:
-                pop_list.reverse()
-                conversation.append(pop_list[0])
-                pop_list.pop(0)
+                conversation.append(conv_obj)
                 summary = ConversationManager.create_summary(conversation)
                 conversation.append({"role": "summary", "content": f"{summary}"})
-                while len(pop_list) > 0:
-                    conversation.append(pop_list[0])
-                    pop_list.pop(0)
                 # write_json_file(convpath, conversation)
                 break
-
-
             
-
         convnum += 1
         convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
 

@@ -44,20 +44,20 @@ class ConversationManager:
 
         if closing:
 
-            summary = self.create_summary(self.conversation)
-            self.conversation.append({"role": "summary", "content": f"{summary}"})
-            print(f"Summary: {summary}")
-
             #adds on the prize and the date and time at the end of the json file
             self.conversation.append({"role": "Time Tracker", "Time and day": f"{time.asctime(time.localtime(time.time()))}"})
             self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
+            
+            summary = self.create_summary(self.conversation)
+            self.conversation.append({"role": "summary", "content": f"{summary}"})
+            print(f"Summary: {summary}")
         
         write_json_file(path, self.conversation)
 
     def create_summary(conversation):
     #Make the summarytext from the conversation
         conversation.pop(0)
-        conversation.append({"role": "system", "content":"make a super breaf summary of what this converation was about. Use at max 1-2 short sentences"})
+        conversation.append({"role": "system", "content":"make a super breaf summary of what this converation was about, ignore time and money modules if any. Include the discussed topic points. Use at max 1-2 short sentences"})
         summary = ChatGPT.prompt(conversation)
         return summary
 
