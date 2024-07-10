@@ -124,13 +124,14 @@ def summarize_conversations():
             if role == "summary":
                 break
             else:
-                conversation.append(conv_obj) 
+                conversation.append(conv_obj)
                 #remove "money tracker" and "time tracker" from the conversation
                 Skip_roles = ["Time Tracker", "Money Tracker"]
-                conversation = [message for message in conversation if message["role"] not in Skip_roles]
-                summary = ConversationManager.create_summary(conversation)
+                summary_conversation = [message for message in conversation if message["role"] not in Skip_roles]
+
+                summary = ConversationManager.create_summary(summary_conversation)
                 conversation.append({"role": "summary", "content": f"{summary}"})
-                # write_json_file(convpath, conversation)
+                write_json_file(convpath, conversation)
                 break
 
         convnum += 1

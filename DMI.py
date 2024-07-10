@@ -190,7 +190,7 @@ class DMI:
                 
     def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
-        weather_convo = ConversationManager(promptname="weather_sort.txt").weather_convo_setup(weather_info_list)
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo, silent=True)
 
         return weather_info
