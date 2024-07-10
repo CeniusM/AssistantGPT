@@ -124,15 +124,22 @@ def summarize_conversations():
             if role == "summary":
                 break
             else:
-                conversation.append(conv_obj)
+                conversation.append(conv_obj) 
+                #remove "money tracker" and "time tracker" from the conversation
+                Skip_roles = ["Time Tracker", "Money Tracker"]
+                conversation = [message for message in conversation if message["role"] not in Skip_roles]
                 summary = ConversationManager.create_summary(conversation)
                 conversation.append({"role": "summary", "content": f"{summary}"})
                 # write_json_file(convpath, conversation)
                 break
-            
+
         convnum += 1
         convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
 
+def format_conversations():
+    clean_conversations()
+    renumber_conversations()
+    summarize_conversations()
 
 #method for finding if the langeuage of the response is danish or english, for the synthesized reader
 def get_text_language(text):
@@ -148,6 +155,4 @@ def get_text_language(text):
 
 
 if __name__ == "__main__" and True:
-    # clean_conversations()
-    # renumber_conversations()
-    summarize_conversations()
+    format_conversations()
