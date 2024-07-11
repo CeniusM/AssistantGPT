@@ -123,5 +123,4 @@ def print_conversation(num):
 
 
 if __name__ == "__main__" and True:
-    #format_conversations()
-    print_conversation(10)
+    format_conversations()

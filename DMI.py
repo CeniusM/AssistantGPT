@@ -20,13 +20,12 @@ class DMI:
         weather_list = DMI.get_weather_info(converted_data, api_data)
         filtered_weather_info = DMI.filter_weather_info(weather_list)
         
-        altered_user_input = user_input+"\n Weather data for the users location, if needed"+filtered_weather_info
+        altered_user_input = user_input+"\n Weather data for the users location, if needed: "+filtered_weather_info
         return altered_user_input 
     
 
     def get_location():
-        # Get the location of the user
-        #use the ip-api to get the location of the user
+        # Get the location of the user, using the ip-api to get the location of the user
         response = requests.get("http://ip-api.com/json") #("https://api.ipgeolocation.io/ipgeo?apiKey=API_KEY", "https://ipapi.co/json/", "https://ipinfo.io/json", "https://freegeoip.app/json/")
         city = response.json()["city"]
         accurate_location = response.json()["lat"], response.json()["lon"]
@@ -46,17 +45,27 @@ class DMI:
         wind_dir = False
         lightnings = False
         snow = False
-        time = [0, 12]
+        time = [0, 24]
 
-        if "lightning" in user_input:
+        if "lightning" in user_input or "thunder" in user_input:
             lightnings = True
         if "snow" in user_input or datetime.now().month in [11, 12, 1, 2, 3]: 
             snow = True
-        if "wind" in user_input:
+        if "wind" in user_input or "storm" in user_input:
             wind_speed = True
             wind_dir = True
 
+        if "tomorrow" in user_input or "i morgen" in user_input:
+            # get the time of today and use it to set the time interval to tomorrow morning
+            now = datetime.now(timezone.utc)
+            time_until_midnight = 24 - now.hour
+            set_time = time_until_midnight + 6
+            time = [set_time, set_time + 16]  # 6 to 22
+
+
+
         #improve to make the sorting ai-based and include location and time 
+
 
         parameters = []
 
