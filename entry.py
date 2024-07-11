@@ -5,6 +5,7 @@ from FileManager import *
 from SmartMic import *
 from ConversationManager import *
 from ConversationTools import *
+from TextChecker import *
 
 conversation_manager = ConversationManager()
 conversation_manager.convo_setup()
