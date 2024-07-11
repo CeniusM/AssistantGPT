@@ -20,7 +20,7 @@ class DMI:
         weather_list = DMI.get_weather_info(converted_data, api_data)
         filtered_weather_info = DMI.filter_weather_info(weather_list)
         
-        altered_user_input = user_input+"\n All the weather data available, if needed:"+filtered_weather_info
+        altered_user_input = user_input+"\n Weather data for the users location, if needed"+filtered_weather_info
         return altered_user_input 
     
 
@@ -166,11 +166,11 @@ class DMI:
         for element in cleaned_data.keys():
             name = element
             values = cleaned_data[element][0]
-            max_value = max(values)
+            max_value = round(max(values), 1)
             max_time = values.index(max_value) + hour
-            min_value = min(values)
+            min_value = round(min(values), 1)
             min_time = values.index(min_value) + hour
-            avg_value = round(sum(values)/len(values), 8)
+            avg_value = round(sum(values)/len(values), 1)
             unit = cleaned_data[element][1]
             weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
         
@@ -178,11 +178,11 @@ class DMI:
             if element != "temperature-2m" and element != "rain-precipitation-rate":
                 name = element
                 values = weather_data[element]
-                max_value = max(values)
+                max_value = round(max(values), 1)
                 max_time = values.index(max_value) + hour
-                min_value = min(values)
+                min_value = round(min(values), 1)
                 min_time = values.index(min_value) + hour
-                avg_value = round(sum(values)/len(values), 8)
+                avg_value = round(sum(values)/len(values), 1)
                 unit = unit_map[element]
                 weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
 

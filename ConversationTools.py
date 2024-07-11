@@ -22,7 +22,7 @@ def clean_conversations():
             filenum = int(filename.split("_")[1].split(".")[0])
             removed_list.append(filenum)
             print(f"Removed {filename}")
-    if len(removed_list) != 0:
+    if len(removed_list) > 3:
         print(f"Removed {removed_list}")
     
 # renumber the files
@@ -106,6 +106,22 @@ def get_text_language(text):
     
     return "en-US"
 
+def print_conversation(num):
+
+    path = os.path.join("Conversations", f"conversation_{num}.json")
+    conversation = read_json_file(path)
+    print_bold(f"Conversation {num}:\n\n")
+
+    for message in conversation:
+        role = message["role"]
+        
+        if role == "user":
+            print_info(f"User: {message["content"]}\n")
+        elif role == "assistant":
+            print_good(f"Assistant: {message["content"]}\n")
+
+
 
 if __name__ == "__main__" and True:
-    format_conversations()
+    #format_conversations()
+    print_conversation(10)
