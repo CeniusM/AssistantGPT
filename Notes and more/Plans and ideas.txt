@@ -5,7 +5,7 @@ writable input and nonverbal commands
 roles (caracters)
 "suit-up"
 navigation
-make check_text intelligent
+make check_text intelligent - use multithreating for a faster response -audible response
 make web agent that can more than google searching. Finding train arrivel times, check email, reference yt vids and more.
 Connect to phone via app or website, or maybe google assistant.
 Load data (personal profile)

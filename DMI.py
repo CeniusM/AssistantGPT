@@ -10,6 +10,8 @@ class DMI:
 
 
     def create_response(user_input="temperature, rain, wind"):
+        print_bold("Getting weather data")
+
         #create parameters and make api call
         parameters, time = DMI.get_wanted_parameters(user_input=user_input)
         dependencies = DMI.create_dependencies(parameters=parameters, times=time)

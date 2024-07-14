@@ -4,6 +4,8 @@ from ConversationManager import *
 class WebSearch:
         
     def create_response(user_input="search the web to figure out how old dolphins can get"):
+        print_bold("Searching.")
+        
         #create parameters and make api call
         search_query = WebSearch.create_search_query(user_input=user_input)
         dependencies = WebSearch.create_dependencies()

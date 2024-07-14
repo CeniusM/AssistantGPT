@@ -9,12 +9,13 @@ import ast
 class Memory:
     #made to manage memory
     def create_response(user_input):
+        print_bold("Checking memory")
+
         #create parameters and make api call
         all_summaries_dict = Memory.get_all_summaries()
         conv_numbers = Memory.create_conv_numbers(user_input=user_input, all_summaries_dict=all_summaries_dict)
         filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
-        
-        
+                
         #Get and manage conversation data
         conv_data = Memory.get_conv_data(filtered_conv_numbers)
         conv_info = Memory.search_through_conversations(user_input, conv_data)

@@ -4,40 +4,46 @@ from SmartMic import *
 from DMI import *
 from Memory import *
 from WebSearch import *
+from ConversationManager import *
 
 
 
-def check_text(text):
+def check_text(text, smart_check=False):
+
+    #check if smart_check and use ChatGPT's function call to check the text
+    if smart_check:
+        convo = ConversationManager(promptname="smart_check.txt").api_convo_setup(text)
+        adjust_mic , web_search, weather_forecast, remember = ChatGPT.check_text(convo, "smart_check.txt")
     
-    if check_text_for_ambient_noise(text):
+    else:    
+        adjust_mic , web_search, weather_forecast, remember = check_text_for_key_words(text)
+
+    #run text commands
+    if adjust_mic:
         SmartMic.adjust_for_ambient_noise()
-        print_bold("Adjusted for ambient noise")
-
-    #if check_text_for_empty(text):
-        #return continue
-
-    if check_text_for_web_search(text):
-        print_bold("Searching.")
-        #text = WebSearch.create_response(text)
-
-
-    if check_text_for_weather(text):
-        print_bold("Getting weather data")
+    if web_search:
+        text = WebSearch.create_response(text)
+    if weather_forecast:
         text = DMI.create_response(text)
-
-    if check_text_for_memory(text):
-        print_bold("Checking memory")
+    if remember:
         text = Memory.create_response(text)
 
     return text
-
 
 def word_in_text(text, words):
     text = " " + text
     words = [" "+word.lower() for word in words]
     return any(word in text for word in words)
 
+def check_text_for_key_words(text):
 
+    #check for all keywords
+    adjust_mic =check_text_for_ambient_noise(text)
+    web_search = check_text_for_web_search(text)
+    weather_forecast = check_text_for_weather(text)
+    remember = check_text_for_memory(text)
+
+    return adjust_mic , web_search, weather_forecast, remember
 
 def check_text_for_exit(text):
     #check for exit words
