@@ -1,0 +1,93 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather_forecast",
+            "description": "Get the weather forecast",
+            "parameters": {
+                "type": "object",
+                "description" : "only fill paramereters that the user asks for. Default is rain, temperature and wind_speed set to true, and the time interval for the next 24 hours",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city"
+                    },
+                    "rain": {"type": "bool"},
+                    "temperature": {"type": "bool"},
+                    "wind_speed" : {"type": "bool"},
+                    "wind_direction" : {"type" : "bool"},
+                    "snow": {"type": "bool"},
+                    "lightning": {"type": "bool"},
+
+
+                    "day" : {
+                        "type" : "string",
+                        "description" : "Day the forecast is for, e.g. 'tuesday', or enter the number of relative days, e.g. today is '0', the day after tomorrow is '2', and in four days is '4', or enter the amount of days using [], so a the next week would be '[7]'"
+                    },
+                    "time_interval" : {
+                        "type" : "int",
+                        "description" : "The amount of hours for the forecast, e.g. this evening could be interpreted as '6'"
+                    },
+                    "time_of_day_" : {
+                        "type" : "int",
+                        "description" : "witch hour on the day, the interval starts, e.g. this evening would be '17'"
+                    }
+
+                },
+                
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["location"]
+            }
+        }
+    },{
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["location"]
+            }
+        }
+    },{
+        "type": "function",
+        "function": {
+            "name": "get_current_weather",
+            "description": "Get the current weather in a given location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "The city and state, e.g. San Francisco, CA",
+                    },
+                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]

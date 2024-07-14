@@ -27,3 +27,22 @@ class ChatGPT:
         ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
 
         return response
+    
+
+    def check_text(convo):
+        #create parameters and make api call
+        response = ChatGPT.prompt(convo, silent=True)
+        
+        adjust_mic = "adjust_mic" in response
+        web_search = "web_search" in response
+        weather_forecast = "weather_forecast" in response
+        remember = "remember" in response
+
+        return adjust_mic, web_search, weather_forecast, remember
+    
+if __name__ == "__main__":
+    conversation_history = [
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What's the weather like today?"}
+    ]
+    ChatGPT.prompt(conversation_history)
