@@ -28,7 +28,7 @@
                         "type" : "int",
                         "description" : "The amount of hours for the forecast, e.g. this evening could be interpreted as '6'"
                     },
-                    "time_of_day_" : {
+                    "time_of_day" : {
                         "type" : "int",
                         "description" : "witch hour on the day, the interval starts, e.g. this evening would be '17'"
                     }

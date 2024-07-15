@@ -29,7 +29,7 @@ while running:
 
     conversation_formatted = conversation_manager.add_and_get("user", text)
 
-    response = ChatGPT.prompt(conversation_formatted)
+    response = ChatGPT.smart_prompt(conversation_formatted, user_input=text)
 
     SmartSpeaker.play_voice(response)
 

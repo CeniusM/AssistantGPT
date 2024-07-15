@@ -10,13 +10,22 @@ class ConversationManager:
         self.conversation_name = self.conversation_name()
         self.system_prompt = read_text_file("Prompts\\"+promptname)
 
-    def api_convo_setup(self, user_input = None, api_data = None):
+    def api_message_setup(self, user_input = None, api_data = None):
         self.conversation.append({"role": "system", "content": self.system_prompt})
         if user_input != None:
             self.conversation.append({"role": "user", "content": str(user_input)})
         if api_data != None:
             self.conversation.append({"role": "tool", "content": str(api_data)})
         return self.conversation
+
+    def api_convo_setup(self, api_data = None):
+        convo = conversation_history.copy()
+        convo.pop(0)
+        convo.insert( len(convo) - 1 , {"role": "system", "content": self.system_prompt})
+        if api_data != None:
+            convo.append({"role": "tool", "content": str(api_data)})
+        return convo
+
 
     def convo_setup(self, *conversation_IDs):
         self.conversation.append({"role": "system", "content": self.system_prompt})

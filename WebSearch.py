@@ -22,8 +22,8 @@ class WebSearch:
 
     def create_search_query(user_input):
         #create the wanted search info using chatGPT
-        search_query_convo = ConversationManager(promptname="search_query.txt").api_convo_setup(user_input)
-        search_query = ChatGPT.prompt(search_query_convo, silent=True, temperature=0.2)
+        search_query_convo = ConversationManager(promptname="search_query.txt").api_message_setup(user_input=user_input)
+        search_query = ChatGPT.prompt(search_query_convo)
         return search_query
 
 
