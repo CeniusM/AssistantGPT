@@ -2,31 +2,92 @@ from ConsoleHelper import *
 from KeyManager import *
 import openai
 
+
 class ChatGPT:    
 
     total_cost = 0
     
-    def prompt(conversation_history, temperature=0.6, silent=False):
+    def prompt(conversation_history):
         openai.api_key = get_GPT_key()
-        temperature = temperature
 
         completion = openai.chat.completions.create(
-                model="gpt-3.5-turbo-0125",
-                messages= conversation_history,
-                temperature=temperature,
-                presence_penalty=0.5,
-                frequency_penalty=0.5,
+                model = "gpt-3.5-turbo-0125",
+                messages = conversation_history,
+                temperature = 0.2
             )
+    
+        total_tokens = completion.usage.total_tokens
+        cost = round((total_tokens*0.002)/1000, 10)
+        ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
         
         response = completion.choices[0].message.content
-        if not silent:
-            print_bold(f"\n{response}\n")
+        return response
+
+
+    def smart_prompt(conversation_history, temperature=0.6, silent=False):
+        openai.api_key = get_GPT_key()
+        tools = read_json_file("Tools.json")
+
+        completion = openai.chat.completions.create(
+                model = "gpt-3.5-turbo-0125",
+                messages = conversation_history,
+                temperature = temperature,
+                tools = tools,   #all functions
+                tool_choice = "auto" #automaticly chose if functions should be called
+            )
+        
+
+        
+        response = completion.choices[0].message.content
+        tool_calls = completion.choices[0].message.tool_calls
     
         total_tokens = completion.usage.total_tokens
         cost = round((total_tokens*0.002)/1000, 10)
         ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
 
-        return response
+        if not tool_calls: # check if the model wanted to call a function
+            if not silent:
+                print_bold(f"\n{response}\n")
+
+            return response
+        
+        else:
+            from ToolManager import get_weather, look_through_memory, web_search, adjust_mic
+            from DMI import create_response
+            from Memory import create_response
+            from WebSearch import create_response
+            from SmartMic import adjust_for_ambient_noise
+            # call the function   Note: the JSON response may not always be valid; be sure to handle errors
+            available_functions = {
+                "get_weather_forecast" : get_weather,
+                "look_through_memory" : look_through_memory,
+                "web_search" : web_search,
+                "adjust_microphone" : adjust_mic
+            }  # only one function in this example, but you can have multiple
+            conversation_history.append(response)  # extend conversation with assistant's reply
+            # Step 4: send the info for each function call and function response to the model
+            for tool_call in tool_calls:
+                function_name = tool_call.function.name
+                function_to_call = available_functions[function_name]
+                function_args = json.loads(tool_call.function.arguments)
+                function_response = function_to_call(
+                    location=function_args.get("location"),
+                    unit=function_args.get("unit"),
+                )
+                conversation_history.append(
+                    {
+                        "tool_call_id": tool_call.id,
+                        "role": "tool",
+                        "name": function_name,
+                        "content": function_response,
+                    }
+                )  # extend conversation with function response
+            second_response = openai.chat.completions.create(
+                model="gpt-3.5-turbo-0125",
+                messages=conversation_history,
+                tool_choice="none"
+            )  # get a new response from the model where it can see the function response
+            return second_response
     
 
     def check_text(convo):
@@ -45,4 +106,4 @@ if __name__ == "__main__":
         {"role": "system", "content": "You are a helpful assistant."},
         {"role": "user", "content": "What's the weather like today?"}
     ]
-    ChatGPT.prompt(conversation_history)
+    ChatGPT.smart_prompt(conversation_history)

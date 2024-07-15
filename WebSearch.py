@@ -1,22 +1,23 @@
-from ChatGPT import *
+from ChatGPT import prompt
 from ConversationManager import *
+from ConsoleHelper import *
 
 class WebSearch:
         
-    def create_response(user_input="search the web to figure out how old dolphins can get"):
+    def create_response(user_input="search the web to figure out how old dolphins can get", search_query=None):
         print_bold("Searching.")
         
         #create parameters and make api call
-        search_query = WebSearch.create_search_query(user_input=user_input)
-        dependencies = WebSearch.create_dependencies()
+        if search_query == None:
+            search_query = WebSearch.create_search_query(user_input=user_input)
+        dependencies = WebSearch.create_dependencies(search_query)
         api_data = WebSearch.api_call(dependencies)
 
         #convert the data from the search
         converted_data = WebSearch.convert_api_data(api_data)
         search_info = WebSearch.manage_data(converted_data)
         
-        altered_user_input = user_input+"\n Search info, if needed: "+search_info
-        return altered_user_input 
+        return search_info
 
 
     def create_search_query(user_input):

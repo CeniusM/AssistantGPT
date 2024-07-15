@@ -1,6 +1,7 @@
 from FileManager import *
-from ChatGPT import *
+from ChatGPT import prompt
 from ConversationManager import *
+from ConsoleHelper import *
 from KeyManager import *
 import requests
 from datetime import datetime, timedelta, timezone
@@ -9,21 +10,21 @@ import matplotlib.pyplot as plt
 class DMI:
 
 
-    def create_response(user_input="temperature, rain, wind"):
+    def create_response(user_input="temperature, rain, wind", parameters = None):
         print_bold("Getting weather data")
 
         #create parameters and make api call
-        parameters, time = DMI.get_wanted_parameters(user_input=user_input)
+        parameters, time = DMI.get_wanted_parameters(user_input=user_input, new_parameters=parameters)
         dependencies = DMI.create_dependencies(parameters=parameters, times=time)
         api_data = DMI.api_call_dmi(dependencies)
 
         #convert the data and get the weather info
         converted_data = DMI.convert_weather_units(api_data)
         weather_list = DMI.get_weather_info(converted_data, api_data)
+        # return weather_list
         filtered_weather_info = DMI.filter_weather_info(weather_list)
         
-        altered_user_input = user_input+"\n Weather data for the users location, if needed: "+filtered_weather_info
-        return altered_user_input 
+        return filtered_weather_info 
     
 
     def get_location():
@@ -39,7 +40,7 @@ class DMI:
         return response.json()
     
 
-    def get_wanted_parameters(user_input = "") -> list:
+    def get_wanted_parameters(user_input = "", parameters=[]) -> list:
         # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
         rain = True
         temperature = True
@@ -69,22 +70,22 @@ class DMI:
         #improve to make the sorting ai-based and include location and time 
 
 
-        parameters = []
+        new_parameters = []
 
         if rain:
-            parameters.append("rain-precipitation-rate")
+            new_parameters.append("rain-precipitation-rate")
         if temperature:
-            parameters.append("temperature-2m")
+            new_parameters.append("temperature-2m")
         if wind_speed:
-            parameters.append("wind-speed")
+            new_parameters.append("wind-speed")
         if wind_dir:
-            parameters.append("wind-dir")
+            new_parameters.append("wind-dir")
         if lightnings:
-            parameters.append("probability-of-lightning")
+            new_parameters.append("probability-of-lightning")
         if snow:
-            parameters.append("total-snowfall-rate-water-equivalent")
+            new_parameters.append("total-snowfall-rate-water-equivalent")
 
-        return parameters, time
+        return new_parameters, time
 
 
     def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 24]) -> dict:
@@ -92,14 +93,11 @@ class DMI:
         if location == None:
             location = DMI.get_location()["accurate_location"]
 
-        if parameters == None:
-            parameters =["temperature-2m", "rain-precipitation-rate", "wind-speed", "wind-dir"] #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
-        # Format parameters for the API
+        # Format parameters for the API #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
         parameter_map = read_json_file("Dmi +\\parameter_map.json")
         tech_parameters = [parameter_map[param] for param in parameters]
         tech_parameters = ",".join(tech_parameters)
-        
-
+    
         # Current time and 12 hours from now and Format times for the API
         now = datetime.now(timezone.utc)  + timedelta(hours=times[0])
         future = now + timedelta(hours=times[1])
@@ -199,10 +197,10 @@ class DMI:
 
         return weather_info_list
                 
-    def filter_weather_info(weather_info_list):
+    def filter_weather_info(user_input, weather_info_list):
         #create a list of the wanted weather info using chatGPT
-        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(weather_info_list)
-        weather_info = ChatGPT.prompt(weather_convo, silent=True)
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(user_input=user_input, api_data=weather_info_list)
+        weather_info = ChatGPT.prompt(weather_convo)
 
         return weather_info
         

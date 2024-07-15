@@ -10,6 +10,7 @@ from ConversationManager import *
 
 def check_text(text, smart_check=False):
 
+    '''
     #check if smart_check and use ChatGPT's function call to check the text
     if smart_check:
         convo = ConversationManager(promptname="smart_check.txt").api_convo_setup(text)
@@ -27,6 +28,8 @@ def check_text(text, smart_check=False):
         text = DMI.create_response(text)
     if remember:
         text = Memory.create_response(text)
+
+    '''
 
     return text
 

@@ -10,9 +10,12 @@ class ConversationManager:
         self.conversation_name = self.conversation_name()
         self.system_prompt = read_text_file("Prompts\\"+promptname)
 
-    def api_convo_setup(self, api_data):
+    def api_convo_setup(self, user_input = None, api_data = None):
         self.conversation.append({"role": "system", "content": self.system_prompt})
-        self.conversation.append({"role": "user", "content": str(api_data)})
+        if user_input != None:
+            self.conversation.append({"role": "user", "content": str(user_input)})
+        if api_data != None:
+            self.conversation.append({"role": "tool", "content": str(api_data)})
         return self.conversation
 
     def convo_setup(self, *conversation_IDs):

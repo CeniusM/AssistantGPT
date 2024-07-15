@@ -1,6 +1,7 @@
 from ConversationManager import *
-from ChatGPT import *
+from ChatGPT import prompt
 from FileManager import *
+from ConsoleHelper import *
 
 import os
 import ast
@@ -15,13 +16,12 @@ class Memory:
         all_summaries_dict = Memory.get_all_summaries()
         conv_numbers = Memory.create_conv_numbers(user_input=user_input, all_summaries_dict=all_summaries_dict)
         filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
-                
+
         #Get and manage conversation data
         conv_data = Memory.get_conv_data(filtered_conv_numbers)
         conv_info = Memory.search_through_conversations(user_input, conv_data)
         
-        altered_user_input = user_input+"\n Memory info, if needed: "+conv_info
-        return altered_user_input
+        return conv_info
     
     
     def get_all_summaries():
@@ -87,9 +87,8 @@ class Memory:
 
     def search_through_conversations(user_input, conv_data):
         #use the conversation data to and ChatGPT to search through the conversations
-        search_prompt = f'User input: {user_input}\nConversation data: {conv_data}'
-        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(search_prompt)
-        search_info = ChatGPT.prompt(search_convo, silent=True, temperature=0.2)
+        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(user_input=user_input, api_data=conv_data)
+        search_info = ChatGPT.prompt(search_convo)
         return search_info
     
 if __name__ == "__main__":

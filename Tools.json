@@ -33,7 +33,7 @@
                         "description" : "witch hour on the day, the interval starts, e.g. this evening would be '17'"
                     }
 
-                },
+                }
                 
             }
         }
@@ -41,52 +41,31 @@
     {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
-                },
-                "required": ["location"]
-            }
+            "name": "adjust_microphone",
+            "description": "Adjust the microphone for background noise"
         }
-    },{
+    },
+    {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
-                },
-                "required": ["location"]
-            }
+            "name": "look_through_memory",
+            "description": "Can look through earlier conversations. Oftenly activatet with phrases like: 'based on what we talked about' or 'do you remember?'. "
         }
-    },{
+    },
+    {
         "type": "function",
         "function": {
-            "name": "get_current_weather",
-            "description": "Get the current weather in a given location",
+            "name": "web_search",
+            "description": "Use a web query to get wanted information",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "location": {
+                    "search_query": {
                         "type": "string",
-                        "description": "The city and state, e.g. San Francisco, CA",
-                    },
-                    "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                        "description": "The search query that can be used for a google search, e.g. 'birth rate denmark'"
+                    }
                 },
-                "required": ["location"]
+                "required": ["search_query"]
             }
         }
     }
