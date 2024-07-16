@@ -7,13 +7,13 @@ class ChatGPT:
 
     total_cost = 0
     
-    def prompt(conversation_history):
+    def prompt(conversation_history, temperature=0.2):
         openai.api_key = get_GPT_key()
 
         completion = openai.chat.completions.create(
                 model = "gpt-3.5-turbo-0125",
                 messages = conversation_history,
-                temperature = 0.2
+                temperature = temperature
             )
     
         total_tokens = completion.usage.total_tokens
@@ -24,7 +24,7 @@ class ChatGPT:
         return response
 
 
-    def smart_prompt(conversation_history, temperature=0.6, silent=False, debug = True):
+    def smart_prompt(conversation_history, temperature=0.6, silent=False, debug = False):
 
         if not debug:
             openai.api_key = get_GPT_key()
@@ -91,7 +91,7 @@ class ChatGPT:
 
                 function_to_call = available_functions[function_name]
 
-                if function_name == "get_weather":
+                if function_name == "get_weather_forecast":
                     function_response = function_to_call(
                         convo = conversation_history,
                         location = function_args.get("location"),
@@ -112,40 +112,25 @@ class ChatGPT:
                         search_query = function_args.get("search_query"),
                         convo=conversation_history
                         )                 
-                else: #if no input or output is needed
-                    function_name()
+                elif function_name == "adjust_microphone": #if no input or output is needed
+                    function_to_call()
                     continue
-
-            
-                function_data = function_response
 
                 conversation_history.append(
                     {
                         "tool_call_id": tool_call.id,
                         "role": "tool",
                         "name": function_name,
-                        "content": function_data,
+                        "content": function_response,
                     }
                 )  # extend conversation with function response
 
+
             
-            second_response = openai.chat.completions.create(
-                model="gpt-3.5-turbo-0125",
-                messages=conversation_history,
-            )  # get a new response from the model where it can see the function response
+            second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5)
             return second_response
+
     
-
-    def check_text(convo):
-        #create parameters and make api call
-        response = ChatGPT.prompt(convo, silent=True)
-        
-        adjust_mic = "adjust_mic" in response
-        web_search = "web_search" in response
-        weather_forecast = "weather_forecast" in response
-        remember = "remember" in response
-
-        return adjust_mic, web_search, weather_forecast, remember
     
 if __name__ == "__main__":
     conversation_history = [
@@ -153,4 +138,4 @@ if __name__ == "__main__":
         #{"role": "user", "content": "What's the weather like today?"}
         {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
     ]
-    ChatGPT.smart_prompt(conversation_history)
+    ChatGPT.smart_prompt(conversation_history, debug=True)

@@ -15,5 +15,5 @@ def web_search(conversation_history):
     WebSearch.create_response(conversation_history)
     
 def adjust_mic():
-    SmartMic.adjust_for_ambient_noise()
+    SmartMic.adjust_for_ambient_noise() #make work with self
 

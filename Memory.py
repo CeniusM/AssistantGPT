@@ -44,7 +44,13 @@ class Memory:
 
     def create_conv_numbers(all_summaries_dict):
         #create the wanted search info using chatGPT
-        conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(all_summaries_dict)
+
+        conversation_history = [ #for now - debug
+        {"role": "system", "content": "You are a helpful assistant."},
+        #{"role": "user", "content": "What's the weather like today?"}
+        {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
+    ]
+        conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(conversation_history, all_summaries_dict)
         conv_numbers = ChatGPT.prompt(conv_numbers_convo)
 
         return conv_numbers

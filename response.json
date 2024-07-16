@@ -1,0 +1,35 @@
+{
+    "id": "chatcmpl-9laCf8pzvvx4b7GJvhlRtI76tgIgO",
+    "choices": [
+        {
+            "finish_reason": "tool_calls",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+                "content": null,
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": [
+                    {
+                        "id": "call_GQwAbtS1T05Mtr2kfvNsZ4R6",
+                        "function": {
+                            "arguments": "{}",
+                            "name": "look_through_memory"
+                        },
+                        "type": "function"
+                    }
+                ]
+            }
+        }
+    ],
+    "created": 1721127609,
+    "model": "gpt-3.5-turbo-0125",
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+        "completion_tokens": 11,
+        "prompt_tokens": 358,
+        "total_tokens": 369
+    }
+}
