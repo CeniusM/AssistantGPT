@@ -1,5 +1,4 @@
 from ConversationManager import *
-from ChatGPT import prompt
 from FileManager import *
 from ConsoleHelper import *
 
@@ -86,6 +85,7 @@ class Memory:
 
     def search_through_conversations(user_input, conv_data):
         #use the conversation data to and ChatGPT to search through the conversations
+        from ChatGPT import prompt
         search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(conv_data)
         search_info = ChatGPT.prompt(search_convo)
         return search_info

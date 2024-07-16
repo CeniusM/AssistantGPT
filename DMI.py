@@ -1,5 +1,4 @@
 from FileManager import *
-from ChatGPT import prompt
 from ConversationManager import *
 from ConsoleHelper import *
 from KeyManager import *
@@ -14,7 +13,7 @@ class DMI:
         print_bold("Getting weather data")
 
         #create parameters and make api call
-        parameters, time = DMI.get_wanted_parameters(user_input=user_input, new_parameters=parameters)
+        parameters, time = DMI.get_wanted_parameters(user_input=user_input, parameters=parameters)
         dependencies = DMI.create_dependencies(parameters=parameters, times=time)
         api_data = DMI.api_call_dmi(dependencies)
 
@@ -40,7 +39,7 @@ class DMI:
         return response.json()
     
 
-    def get_wanted_parameters(user_input = "", parameters=[]) -> list:
+    def get_wanted_parameters(user_input = "", parameters=[]):
         # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
         rain = True
         temperature = True
@@ -199,6 +198,7 @@ class DMI:
                 
     def filter_weather_info(user_input, weather_info_list):
         #create a list of the wanted weather info using chatGPT
+        from ChatGPT import prompt
         weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(user_input=user_input, api_data=weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo)
 

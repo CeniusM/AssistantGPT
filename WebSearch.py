@@ -1,4 +1,3 @@
-from ChatGPT import prompt
 from ConversationManager import *
 from ConsoleHelper import *
 

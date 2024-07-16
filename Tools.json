@@ -12,12 +12,12 @@
                         "type": "string",
                         "description": "The city"
                     },
-                    "rain": {"type": "bool"},
-                    "temperature": {"type": "bool"},
-                    "wind_speed" : {"type": "bool"},
-                    "wind_direction" : {"type" : "bool"},
-                    "snow": {"type": "bool"},
-                    "lightning": {"type": "bool"},
+                    "rain": {"type": "boolean"},
+                    "temperature": {"type": "boolean"},
+                    "wind_speed" : {"type": "boolean"},
+                    "wind_direction" : {"type" : "boolean"},
+                    "snow": {"type": "boolean"},
+                    "lightning": {"type": "boolean"},
 
 
                     "day" : {
@@ -25,11 +25,11 @@
                         "description" : "Day the forecast is for, e.g. 'tuesday', or enter the number of relative days, e.g. today is '0', the day after tomorrow is '2', and in four days is '4', or enter the amount of days using [], so a the next week would be '[7]'"
                     },
                     "time_interval" : {
-                        "type" : "int",
+                        "type" : "integer",
                         "description" : "The amount of hours for the forecast, e.g. this evening could be interpreted as '6'"
                     },
                     "time_of_day" : {
-                        "type" : "int",
+                        "type" : "integer",
                         "description" : "witch hour on the day, the interval starts, e.g. this evening would be '17'"
                     }
 

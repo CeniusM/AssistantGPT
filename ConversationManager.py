@@ -19,7 +19,7 @@ class ConversationManager:
         return self.conversation
 
     def api_convo_setup(self, api_data = None):
-        convo = conversation_history.copy()
+        convo = self.conversation.copy()
         convo.pop(0)
         convo.insert( len(convo) - 1 , {"role": "system", "content": self.system_prompt})
         if api_data != None:

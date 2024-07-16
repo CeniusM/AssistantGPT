@@ -5,16 +5,15 @@ from SmartMic import *
 
 #this document has been created to solve import error
 
-def get_weather(user_input, parameters=None):
-    DMI.create_response(user_input, parameters)
+def get_weather(conversation_history, parameters=None):
+    DMI.create_response(conversation_history, parameters)
 
-def look_through_memory(user_input):
-    Memory.create_response(user_input)
+def look_through_memory(conversation_history):
+    Memory.create_response(conversation_history)
 
-def web_search(user_input):
-    WebSearch.create_response(user_input)
+def web_search(conversation_history):
+    WebSearch.create_response(conversation_history)
     
 def adjust_mic():
     SmartMic.adjust_for_ambient_noise()
 
-get_weather("hey")
