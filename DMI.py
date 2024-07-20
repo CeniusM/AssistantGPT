@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 class DMI:
 
 
-    def create_response(user_input="temperature, rain, wind", parameters = None):
+    def create_response(user_input="temperature, rain, wind", parameters = None, GPT_input=None):
         print_bold("Getting weather data")
 
         #create parameters and make api call
-        parameters, time = DMI.get_wanted_parameters(user_input=user_input, parameters=parameters)
-        dependencies = DMI.create_dependencies(parameters=parameters, times=time)
+        parameters, times = DMI.extract_parameters(GPT_input)
+        time_interval = DMI.get_time_interval(times)
+        parameters = DMI.get_wanted_parameters(user_input=user_input, parameters=parameters)
+        dependencies = DMI.create_dependencies(parameters=parameters, times=time_interval)
         api_data = DMI.api_call_dmi(dependencies)
 
         #convert the data and get the weather info
@@ -26,17 +28,74 @@ class DMI:
         return filtered_weather_info 
     
 
-    def get_location():
+    def get_current_location():
         # Get the location of the user, using the ip-api to get the location of the user
         response = requests.get("http://ip-api.com/json") #("https://api.ipgeolocation.io/ipgeo?apiKey=API_KEY", "https://ipapi.co/json/", "https://ipinfo.io/json", "https://freegeoip.app/json/")
         city = response.json()["city"]
-        accurate_location = response.json()["lat"], response.json()["lon"]
+        accurate_location = response.json()["lon"], response.json()["lat"]
         return {"city": city, "accurate_location": accurate_location}
     
+    def get_location_points(city="copenhagen"):
+        #get long and latt from name ()
+        pass
+    
     def api_call_meteo():
-        location = DMI.get_location()["accurate_location"]
+        location = DMI.get_current_location()["accurate_location"]
         response = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={location[0]}&longitude={location[1]}&current_weather=true")
         return response.json()
+
+    def get_time_interval(days = None, hour = None, duration = None):        
+        now = datetime.now(timezone.utc).hour + 3
+        print(now)
+        time_until_midnight = 24 - now
+
+        if days == None and hour == None and (duration == None or duration == 0):
+            print("Error: No inputted time parameters, Couldn't get time interval setting it to the next 24 hours")
+            return [0,24]
+
+        if days == None:
+            days = [0]
+        elif type(days) == int:
+            days = [days]
+        elif type(days) == str:
+            days = [int(days)]
+        if len(days) == 2:
+            if days[0] == days[1]:
+                days = [0]
+
+        try:
+            #if one day is given
+            if len(days) == 1:
+                
+                if duration != None and duration != 0:
+
+                    #duration + hour
+                    if hour == None:
+                        return [0, duration]
+                    
+                    #duration - hour
+                    start = hour-now + 24 * int(days[0])
+                    return [start, start+duration]
+                
+                # -duration + hour
+                if hour != None:
+                    start = hour-now + 24 * int(days[0])
+                    return [start, start+8]
+
+            # -duration - hour
+                start = time_until_midnight + 24*days[0]
+                return [start, start+24]
+            
+            
+            if len(days) == 2:
+                start = time_until_midnight + 24*days[0]
+                end = time_until_midnight + 24*days[1]
+                return[start, end]
+            
+        except:
+            print("Time interval wasn't formatted correctly")
+        print("Couldn't get time interval setting it to the next 24 hours")
+        return [0,24]
     
 
     def get_wanted_parameters(user_input = "", parameters=[]):
@@ -47,7 +106,6 @@ class DMI:
         wind_dir = False
         lightnings = False
         snow = False
-        time = [0, 24]
 
         if "lightning" in user_input or "thunder" in user_input:
             lightnings = True
@@ -57,15 +115,16 @@ class DMI:
             wind_speed = True
             wind_dir = True
 
+        '''
+
         if "tomorrow" in user_input or "i morgen" in user_input:
             # get the time of today and use it to set the time interval to tomorrow morning
             now = datetime.now(timezone.utc)
             time_until_midnight = 24 - now.hour
             set_time = time_until_midnight + 6
             time = [set_time, set_time + 16]  # 6 to 22
-
-
-
+            
+        '''
         #improve to make the sorting ai-based and include location and time 
 
 
@@ -84,13 +143,16 @@ class DMI:
         if snow:
             new_parameters.append("total-snowfall-rate-water-equivalent")
 
-        return new_parameters, time
+        return new_parameters
 
 
-    def create_dependencies(location: tuple = None, parameters: list = None, times: list = [0, 24]) -> dict:
+    def create_dependencies(location: list = None, parameters: list = None, times: list = [0, 24]) -> dict:
 
+        #lon  &  lat
         if location == None:
-            location = DMI.get_location()["accurate_location"]
+            location = DMI.get_current_location()["accurate_location"]
+        else:
+            location = DMI.get_location_points()
 
         # Format parameters for the API #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
         parameter_map = read_json_file("Dmi +\\parameter_map.json")
@@ -106,7 +168,7 @@ class DMI:
         api_key = get_DMI_key()      
 
         dependencies = {        
-            "coords": f"POINT({location[1]} {location[0]})",
+            "coords": f"POINT({location[0]} {location[1]})",
             "crs": "crs84",
             "parameter-name": f"{tech_parameters}",
             "datetime": f"{start_time}/{end_time}",
@@ -240,14 +302,18 @@ class DMI:
         #plot the figure
         fig.tight_layout()
         plt.show()
-
-
-
+                            
 
 if __name__ == "__main__":
+
+    print(DMI.get_time_interval(days=0, hour=None,  duration=8))
+
+    
     parameters, time = DMI.get_wanted_parameters("temperature, rain, wind")
     api_data = DMI.api_call_dmi(DMI.create_dependencies(parameters=parameters, times=time))
     # write_json_file("Dmi +\\weather.json", api_data)
     # api_data = read_json_file("Dmi +\\weather.json")
     converted_data = DMI.convert_weather_units(api_data)
     DMI.plot_weather(converted_data)
+
+    
