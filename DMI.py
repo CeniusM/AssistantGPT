@@ -9,14 +9,16 @@ import matplotlib.pyplot as plt
 class DMI:
 
 
-    def create_response(user_input="temperature, rain, wind", parameters = None, GPT_input=None):
+    def create_response(user_input="temperature, rain, wind", GPT_parameters=None):
         print_bold("Getting weather data")
 
         #create parameters and make api call
-        parameters, times = DMI.extract_parameters(GPT_input)
+        times, location, parameters = DMI.extract_parameters(GPT_parameters)
         time_interval = DMI.get_time_interval(times)
-        parameters = DMI.get_wanted_parameters(user_input=user_input, parameters=parameters)
-        dependencies = DMI.create_dependencies(parameters=parameters, times=time_interval)
+        location_points = DMI.get_location_points(location)
+        forecast_parameters = DMI.get_wanted_parameters(parameters)
+        
+        dependencies = DMI.create_dependencies(times=time_interval, location=location_points, parameters=forecast_parameters)
         api_data = DMI.api_call_dmi(dependencies)
 
         #convert the data and get the weather info
@@ -27,7 +29,31 @@ class DMI:
         
         return filtered_weather_info 
     
+    def api_call_meteo(): #super simple api call
+        location = DMI.get_current_location()["accurate_location"]
+        response = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={location[1]}&longitude={location[0]}&current_weather=true")
+        return response.json()
 
+    def extract_parameters(GPT_parameters):
+        
+        days = "days"
+        hour = "hour"
+        duration = "duration"
+        times = [days, hour, duration]
+
+        location = "location"
+        
+        rain = True
+        temperature = True
+        wind_speed = True
+        wind_dir = False
+        lightnings = False
+        snow = False
+        parameters = [rain, temperature, wind_speed, wind_dir, lightnings, snow] 
+
+        return times, location, parameters
+    
+    
     def get_current_location():
         # Get the location of the user, using the ip-api to get the location of the user
         response = requests.get("http://ip-api.com/json") #("https://api.ipgeolocation.io/ipgeo?apiKey=API_KEY", "https://ipapi.co/json/", "https://ipinfo.io/json", "https://freegeoip.app/json/")
@@ -35,14 +61,13 @@ class DMI:
         accurate_location = response.json()["lon"], response.json()["lat"]
         return {"city": city, "accurate_location": accurate_location}
     
-    def get_location_points(city="copenhagen"):
-        #get long and latt from name ()
+    def get_location_points(city=None):
+        if city == None:
+            return DMI.get_current_location()["accurate_location"]
+
+        #get long and latt from city name ()
         pass
     
-    def api_call_meteo():
-        location = DMI.get_current_location()["accurate_location"]
-        response = requests.get(f"https://api.open-meteo.com/v1/forecast?latitude={location[0]}&longitude={location[1]}&current_weather=true")
-        return response.json()
 
     def get_time_interval(days = None, hour = None, duration = None):        
         now = datetime.now(timezone.utc).hour + 3
@@ -98,7 +123,7 @@ class DMI:
         return [0,24]
     
 
-    def get_wanted_parameters(user_input = "", parameters=[]):
+    def get_wanted_parameters(parameters=[]):
         # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
         rain = True
         temperature = True
@@ -107,28 +132,7 @@ class DMI:
         lightnings = False
         snow = False
 
-        if "lightning" in user_input or "thunder" in user_input:
-            lightnings = True
-        if "snow" in user_input or datetime.now().month in [11, 12, 1, 2, 3]: 
-            snow = True
-        if "wind" in user_input or "storm" in user_input:
-            wind_speed = True
-            wind_dir = True
-
-        '''
-
-        if "tomorrow" in user_input or "i morgen" in user_input:
-            # get the time of today and use it to set the time interval to tomorrow morning
-            now = datetime.now(timezone.utc)
-            time_until_midnight = 24 - now.hour
-            set_time = time_until_midnight + 6
-            time = [set_time, set_time + 16]  # 6 to 22
-            
-        '''
-        #improve to make the sorting ai-based and include location and time 
-
-
-        new_parameters = []
+        new_parameters = [] # find more in DMI + folder 
 
         if rain:
             new_parameters.append("rain-precipitation-rate")
@@ -146,24 +150,18 @@ class DMI:
         return new_parameters
 
 
-    def create_dependencies(location: list = None, parameters: list = None, times: list = [0, 24]) -> dict:
-
-        #lon  &  lat
-        if location == None:
-            location = DMI.get_current_location()["accurate_location"]
-        else:
-            location = DMI.get_location_points()
-
-        # Format parameters for the API #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
-        parameter_map = read_json_file("Dmi +\\parameter_map.json")
-        tech_parameters = [parameter_map[param] for param in parameters]
-        tech_parameters = ",".join(tech_parameters)
+    def create_dependencies( times: list, location: list, parameters: list) -> dict:
     
         # Current time and 12 hours from now and Format times for the API
         now = datetime.now(timezone.utc)  + timedelta(hours=times[0])
         future = now + timedelta(hours=times[1])
         start_time = now.strftime("%Y-%m-%dT%H:%M:%SZ")
         end_time = future.strftime("%Y-%m-%dT%H:%M:%SZ")
+
+        # Format parameters for the API #https://opendatadocs.dmi.govcloud.dk/Data/Forecast_Data_Weather_Model_HARMONIE_DINI_EDR
+        parameter_map = read_json_file("Dmi +\\parameter_map.json")
+        tech_parameters = [parameter_map[param] for param in parameters]
+        tech_parameters = ",".join(tech_parameters)
 
         api_key = get_DMI_key()      
 
@@ -258,16 +256,15 @@ class DMI:
 
         return weather_info_list
                 
-    def filter_weather_info(user_input, weather_info_list):
+    def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
         from ChatGPT import prompt
-        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(user_input=user_input, api_data=weather_info_list)
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(api_data=weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo)
 
         return weather_info
-        
 
-    
+
 
     def plot_weather(data):
 

@@ -8,7 +8,7 @@ import ast
 
 class Memory:
     #made to manage memory
-    def create_response(converation_history):
+    def create_response():
         print_bold("Checking memory")
 
         #create parameters and make api call
