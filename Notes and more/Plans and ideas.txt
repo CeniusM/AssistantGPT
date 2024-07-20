@@ -8,12 +8,13 @@ navigation
 make web agent that can more than google searching. Finding train arrivel times, check email, reference yt vids and more.
 Connect to phone via app or website, or maybe google assistant.
 Load data (personal profile)
-
+location for DMI
+Smart-gpt  use multithreating for a faster response -audible response
 
 ## Doing
 
 webacces
-make check_text intelligent - use multithreating for a faster response -audible response
+make check_text intelligent (smart gpt)
 graphics (pygames?)
 
 

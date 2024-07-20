@@ -24,9 +24,9 @@ class DMI:
         #convert the data and get the weather info
         converted_data = DMI.convert_weather_units(api_data)
         weather_list = DMI.get_weather_info(converted_data, api_data)
-        # return weather_list
-        filtered_weather_info = DMI.filter_weather_info(weather_list)
         
+        # filter relevant weather info
+        filtered_weather_info = DMI.filter_weather_info(weather_list)
         return filtered_weather_info 
     
     def api_call_meteo(): #super simple api call
@@ -37,36 +37,33 @@ class DMI:
     def extract_parameters(GPT_parameters):
         
         #Default everything
-        day, time_of_day, time_interval = None, None, None
-        location = None
-        rain, temperature, wind_speed, wind_direction, lightning, snow = True, True, True, False, False, False
-
-        if GPT_parameters == None:
-            times = [day, time_of_day, time_interval]
-            parameters = [rain, temperature, wind_speed, wind_direction, lightning, snow] 
-            return times, location, parameters
-
-        location = GPT_parameters.get("location")
-
-        rain = GPT_parameters.get("rain")
-        temperature = GPT_parameters.get("temperature")
-        wind_speed = GPT_parameters.get("wind_speed" )
-        wind_direction = GPT_parameters.get("wind_direction" )
-        snow = GPT_parameters.get("snow")
-        lightning = GPT_parameters.get("lightning")
+        values = {"day": None, "time_of_day": None, "time_interval": None, "location": None, "rain": True, "temperature": True, "wind_speed": True, "wind_direction": False, "snow": False, "lightning": False}
         
-        day = GPT_parameters.get("day")
-        time_of_day = GPT_parameters.get("time_of_day")
-        time_interval = GPT_parameters.get("time_interval")
+        times = [values["day"], values["time_of_day"], values["time_interval"]]
+        location = values["location"]
+        parameters = [values["rain"], values["temperature"], values["wind_speed"], values["wind_direction"], values["lightning"], values["snow"]]
 
+        # Check if the GPT_parameters are None and return the default values
+        if GPT_parameters == None:
+            return times, location, parameters
+        
+        # Iterate through the keys and retrieve the values with error handling
+        for key in values.keys():
+            try:
+                key_value = GPT_parameters.get(key)
+                if key_value != None:
+                    values[key] = key_value
+            except:
+                pass
 
-        if rain and datetime.now().month in [11, 12, 1, 2, 3]: 
-            snow = True
+        #check snow
+        if values["rain"] == True and datetime.now().month in [11, 12, 1, 2, 3]:
+            values["snow"] = True
 
-
-        times = [day, time_of_day, time_interval]
-
-        parameters = [rain, temperature, wind_speed, wind_direction, lightning, snow] 
+        #create bundles
+        times = [values["day"], values["time_of_day"], values["time_interval"]]
+        location = values["location"]
+        parameters = [values["rain"], values["temperature"], values["wind_speed"], values["wind_direction"], values["lightning"], values["snow"]]
 
         return times, location, parameters
     
@@ -93,7 +90,7 @@ class DMI:
             print("Error: No inputted time parameters, Couldn't get time interval setting it to the next 24 hours")
             return [0,24]
         
-        now = datetime.now(timezone.utc).hour + 3 #3 from danish summer time 
+        now = (datetime.now(timezone.utc).hour + 3) % 24 #3 from danish summer time 
         time_until_midnight = (24 - now) % 24
 
         if time_of_day != None:
@@ -129,6 +126,8 @@ class DMI:
                     start = time_from_now + 24 * int(days[0])
                     return [start, start+8]
 
+                if days[0] == 0:
+                    return [0, time_until_midnight]
             # -duration - hour
                 start = time_until_midnight + 24*days[0]
                 return [start, start+24]
@@ -145,29 +144,24 @@ class DMI:
         return [0,24]
     
 
-    def get_wanted_parameters(parameters=[]):
-        # Get the wanted parameters and time interval from the user input and filter them with ChatGPT
-        rain = True
-        temperature = True
-        wind_speed = True
-        wind_dir = False
-        lightnings = False
-        snow = False
+    def get_wanted_parameters(parameters):
+        rain, temperature, wind_speed, wind_direction, lightnings, snow = parameters
 
-        new_parameters = [] # find more in DMI + folder 
+        parameter_map = { # find more in DMI + folder 
+            "rain-precipitation-rate": rain, 
+            "temperature-2m": temperature,
+            "wind-speed": wind_speed,
+            "wind-dir": wind_direction,
+            "probability-of-lightning": lightnings,
+            "total-snowfall-rate-water-equivalent": snow
+        }
 
-        if rain:
-            new_parameters.append("rain-precipitation-rate")
-        if temperature:
-            new_parameters.append("temperature-2m")
-        if wind_speed:
-            new_parameters.append("wind-speed")
-        if wind_dir:
-            new_parameters.append("wind-dir")
-        if lightnings:
-            new_parameters.append("probability-of-lightning")
-        if snow:
-            new_parameters.append("total-snowfall-rate-water-equivalent")
+        new_parameters = []
+
+        # Iterate over the dictionary and add parameters based on their condition
+        for param, condition in parameter_map.items():
+            if condition:
+                new_parameters.append(param)
 
         return new_parameters
 
@@ -334,7 +328,7 @@ class DMI:
 if __name__ == "__main__":
 
     # print(DMI.create_response({'temperature': True, 'rain': True, 'wind_speed': True, 'time_interval': 5}))
-    
+    # print(DMI.get_time_interval([0, 1, None]))
     
     times, location, parameters = DMI.extract_parameters({'temperature': True, 'rain': True, 'wind_speed': True, 'time_interval': 35})
     time_interval = DMI.get_time_interval(times)

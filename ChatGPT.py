@@ -24,33 +24,31 @@ class ChatGPT:
         return response
 
 
-    def smart_prompt(conversation_history, temperature=0.5, silent=False, debug = False):
+    def smart_prompt(conversation_history, temperature=0.5, silent=False):
 
-        if not debug:
-            openai.api_key = get_GPT_key()
-            tools = read_json_file("Tools.json")
 
-            completion = openai.chat.completions.create(
-                    model = "gpt-3.5-turbo-0125",
-                    messages = conversation_history,
-                    temperature = temperature,
-                    tools = tools,   #all functions
-                    tool_choice = "auto" #automaticly chose if functions should be called
-                )
+        openai.api_key = get_GPT_key()
+        tools = read_json_file("Tools.json")
 
-            total_tokens = completion.usage.total_tokens
-            cost = round((total_tokens*0.002)/1000, 10)
-            ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
-            
-            response = completion.choices[0].message.content
-            tool_calls = completion.choices[0].message.tool_calls       
+        completion = openai.chat.completions.create(
+                model = "gpt-3.5-turbo-0125",
+                messages = conversation_history,
+                temperature = temperature,
+                tools = tools,   #all functions
+                tool_choice = "auto" #automaticly chose if functions should be called
+            )
 
-        else:
-            completion = read_json_file("Completions examples\\GPT_weather.json")
-            tool_calls = completion["choices"][0]["message"]["tool_calls"]
-            response = completion["choices"][0]["message"]["content"]
+        total_tokens = completion.usage.total_tokens
+        cost = round((total_tokens*0.002)/1000, 10)
+        ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
+        
+        response = completion.choices[0].message.content
+        tool_calls = completion.choices[0].message.tool_calls       
 
-        #too
+        # else:
+        #     completion = read_json_file("Completions examples\\GPT_weather.json")
+        #     tool_calls = completion["choices"][0]["message"]["tool_calls"]
+        #     response = completion["choices"][0]["message"]["content"]
 
         if not tool_calls: # check if the model wanted to call a function
             if not silent:
@@ -76,12 +74,8 @@ class ChatGPT:
             
             # send the info for each function call and function response to the model
             for tool_call in tool_calls:
-                if debug:
-                    function_name = tool_call["function"]["name"]
-                    function_args = json.loads(tool_call["function"]["arguments"])
-                else:
-                    function_name = tool_call.function.name
-                    function_args = json.loads(tool_call.function.arguments)
+                function_name = tool_call.function.name
+                function_args = json.loads(tool_call.function.arguments)
                 function_to_call = available_functions[function_name]
 
                 if function_name == "get_weather_forecast":
@@ -93,26 +87,15 @@ class ChatGPT:
                 elif function_name == "adjust_microphone": #if no input or output is needed
                     function_to_call()
                     continue
-
-                if debug:
-                    conversation_history.append(
-                        {
-                            "tool_call_id": tool_call["id"],
-                            "role": "tool",
-                            "name": function_name,
-                            "content": function_response,
-                        }
-                    )  # extend conversation with function response
-
-                else:
-                    conversation_history.append(
-                        {
-                            "tool_call_id": tool_call.id,
-                            "role": "tool",
-                            "name": function_name,
-                            "content": function_response,
-                        }
-                    )  # extend conversation with function response
+                
+                conversation_history.append(
+                    {
+                        "tool_call_id": tool_call.id,
+                        "role": "tool",
+                        "name": function_name,
+                        "content": function_response,
+                    }
+                )  # extend conversation with function response
 
 
             
@@ -130,4 +113,4 @@ if __name__ == "__main__":
         # {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
         # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
-    print(ChatGPT.smart_prompt(conversation_history, debug=False))
+    print(ChatGPT.smart_prompt(conversation_history))
