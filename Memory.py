@@ -89,13 +89,19 @@ class Memory:
                 print(f"Error: The file at {convo_path} was not found.")
         return conv_data
 
-    def search_through_conversations(user_input, conv_data):
+    def search_through_conversations(conv_data):
         #use the conversation data to and ChatGPT to search through the conversations
-        from ChatGPT import prompt
-        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(conv_data)
+
+        conversation_history = [ #for now - debug
+        {"role": "system", "content": "You are a helpful assistant."},
+        #{"role": "user", "content": "What's the weather like today?"}
+        {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
+        ]
+
+        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(conversation=conversation_history, api_data=conv_data)
         search_info = ChatGPT.prompt(search_convo)
         return search_info
     
 if __name__ == "__main__":
     # print(Memory.create_response("based on what we've talked about earlier, how old am i?"))
-    print(Memory.create_response("based on what we've talked about earlier, what is your favorite pet?"))
+    print(Memory.create_response())

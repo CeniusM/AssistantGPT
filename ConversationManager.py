@@ -18,13 +18,13 @@ class ConversationManager:
             self.conversation.append({"role": "tool", "content": str(api_data)})
         return self.conversation
 
-    def api_convo_setup(self, conversation = None,  api_data = None):
+    def api_convo_setup(self, conversation = None, api_data = None):
         if conversation == None:
             conversation = self.conversation.copy()
         conversation.pop(0)
         conversation.insert( len(conversation) - 1 , {"role": "system", "content": self.system_prompt})
         if api_data != None:
-            conversation.append({"role": "tool", "content": str(api_data)})
+            conversation.append({"role": "user", "content": str(api_data)})
         return conversation
 
 

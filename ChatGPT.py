@@ -88,12 +88,10 @@ class ChatGPT:
                 else:
                     function_name = tool_call.function.name
                     function_args = json.loads(tool_call.function.arguments)
-
                 function_to_call = available_functions[function_name]
 
                 if function_name == "get_weather_forecast":
                     function_response = function_to_call(
-                        convo = conversation_history,
                         location = function_args.get("location"),
                         rain = function_args.get("rain"),
                         temperature = function_args.get("temperature"),
@@ -106,24 +104,34 @@ class ChatGPT:
                         time_of_day = function_args.get("time_of_day")
                         )
                 elif function_name == "look_through_memory":
-                    function_response = function_to_call(conversation_history = conversation_history)
+                    function_response = function_to_call()
                 elif function_name == "web_search":
                     function_response = function_to_call(
-                        search_query = function_args.get("search_query"),
-                        convo=conversation_history
+                        search_query = function_args.get("search_query")
                         )                 
                 elif function_name == "adjust_microphone": #if no input or output is needed
                     function_to_call()
                     continue
 
-                conversation_history.append(
-                    {
-                        "tool_call_id": tool_call.id,
-                        "role": "tool",
-                        "name": function_name,
-                        "content": function_response,
-                    }
-                )  # extend conversation with function response
+                if debug:
+                    conversation_history.append(
+                        {
+                            "tool_call_id": tool_call["id"],
+                            "role": "tool",
+                            "name": function_name,
+                            "content": function_response,
+                        }
+                    )  # extend conversation with function response
+
+                else:
+                    conversation_history.append(
+                        {
+                            "tool_call_id": tool_call.id,
+                            "role": "tool",
+                            "name": function_name,
+                            "content": function_response,
+                        }
+                    )  # extend conversation with function response
 
 
             
@@ -136,6 +144,7 @@ if __name__ == "__main__":
     conversation_history = [
         {"role": "system", "content": "You are a helpful assistant."},
         #{"role": "user", "content": "What's the weather like today?"}
-        {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
+        #{"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
+        {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
     ChatGPT.smart_prompt(conversation_history, debug=True)
