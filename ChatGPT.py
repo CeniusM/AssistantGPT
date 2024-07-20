@@ -24,7 +24,7 @@ class ChatGPT:
         return response
 
 
-    def smart_prompt(conversation_history, temperature=0.6, silent=False, debug = False):
+    def smart_prompt(conversation_history, temperature=0.5, silent=False, debug = False):
 
         if not debug:
             openai.api_key = get_GPT_key()
@@ -71,7 +71,9 @@ class ChatGPT:
                 "web_search" : web_search,
                 "adjust_microphone" : adjust_mic
             }
-            #conversation_history.append(completion.choices[0].message)  # extend conversation with assistant's reply
+
+            conversation_history.append(completion.choices[0].message)  # extend conversation with assistant's reply    ¯\_(ツ)_/¯
+            
             # send the info for each function call and function response to the model
             for tool_call in tool_calls:
                 if debug:
@@ -122,9 +124,10 @@ class ChatGPT:
 if __name__ == "__main__":
     conversation_history = [
         {"role": "system", "content": "You are a helpful assistant."},
-        # {"role": "user", "content": "What's the weather like today?"}
-        {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        {"role": "user", "content": "What's the weather like today? and based on what we've talked about earlier, what is your favorite pet"}
+        # {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        # {"role": "user", "content": "What will the wind be like the in 5 hours from now?"}
         # {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
         # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
-    ChatGPT.smart_prompt(conversation_history, debug=True)
+    print(ChatGPT.smart_prompt(conversation_history, debug=False))

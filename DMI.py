@@ -88,14 +88,17 @@ class DMI:
 
     def get_time_interval(times):        
         days, time_of_day, duration = times
-        
-        now = datetime.now(timezone.utc).hour + 3
-        print(now)
-        time_until_midnight = 24 - now
 
         if days == None and time_of_day == None and (duration == None or duration == 0):
             print("Error: No inputted time parameters, Couldn't get time interval setting it to the next 24 hours")
             return [0,24]
+        
+        now = datetime.now(timezone.utc).hour + 3 #3 from danish summer time 
+        time_until_midnight = (24 - now) % 24
+
+        if time_of_day != None:
+            time_from_now = (time_of_day - now) % 24
+
 
         if days == None:
             days = [0]
@@ -118,12 +121,12 @@ class DMI:
                         return [0, duration]
                     
                     #duration - hour
-                    start = time_of_day-now + 24 * int(days[0])
+                    start = time_from_now + 24 * int(days[0])
                     return [start, start+duration]
                 
                 # -duration + hour
                 if time_of_day != None:
-                    start = time_of_day-now + 24 * int(days[0])
+                    start = time_from_now + 24 * int(days[0])
                     return [start, start+8]
 
             # -duration - hour
@@ -234,13 +237,14 @@ class DMI:
             rain[time] = round(rain_acc[time] - rain_acc[time-1], 8)
 
         # get the hour of now to update data
-        hour = int(datetime.now(timezone.utc).hour) + 2  #2 from danish summer time
+        hour = int(datetime.now(timezone.utc).hour) + 4  #3 from danish summer time 1 from 
         hours = range(hour+1, hour + len(temperatures)+1)
         hours = [h % 24 for h in hours]
 
         return temperatures, rain, hour, hours
 
     def get_weather_info(converted_data, weather_data):
+        now = datetime.now(timezone.utc).hour + 4
         temperatures, rain, hour, hours = converted_data
         cleaned_data = {"temperature": (temperatures, "C"), "rain": (rain, "mm/h")}
         unit_map = read_json_file("Dmi +\\parameter_unit_map.json")
@@ -253,9 +257,9 @@ class DMI:
             name = element
             values = cleaned_data[element][0]
             max_value =max(values)
-            max_time = values.index(max_value) + hour
+            max_time = (values.index(max_value) + hour) % 24
             min_value =min(values)
-            min_time = values.index(min_value) + hour
+            min_time = (values.index(min_value) + hour) % 24
             avg_value = sum(values)/len(values)
             unit = cleaned_data[element][1]
             weather_info_list.append({name: [{"max": (round(max_value,1), round(max_time,1))}, {"min": (round(min_value,1), round(min_time,1))}, {"avg": round(avg_value,1)}, unit]})
@@ -266,9 +270,9 @@ class DMI:
                 name = element
                 values = weather_data[element]
                 max_value =max(values)
-                max_time = values.index(max_value) + hour
+                max_time = (values.index(max_value) + hour) % 24
                 min_value =min(values)
-                min_time = values.index(min_value) + hour
+                min_time = (values.index(min_value) + hour) % 24
                 avg_value = sum(values)/len(values)
                 unit = unit_map[element]
                 weather_info_list.append({name: [{"max": (round(max_value,1), round(max_time,1))}, {"min": (round(min_value,1), round(min_time,1))}, {"avg": round(avg_value,1)}, unit]})
@@ -280,8 +284,10 @@ class DMI:
 
         conversation_history = [ #for now - debug
         {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        # {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        {"role": "user", "content": "What will the weather be like the next 5 hours?"}
         ]
+
 
         weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(conversation=conversation_history, api_data=weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo)
@@ -327,15 +333,24 @@ class DMI:
 
 if __name__ == "__main__":
 
-    print(DMI.get_current_location())
-    print(DMI.get_time_interval(["1", 8, 12]))
-
+    # print(DMI.create_response({'temperature': True, 'rain': True, 'wind_speed': True, 'time_interval': 5}))
     
-    parameters, time = DMI.get_wanted_parameters("temperature, rain, wind")
-    api_data = DMI.api_call_dmi(DMI.create_dependencies(parameters=parameters, times=time))
-    # write_json_file("Dmi +\\weather.json", api_data)
-    # api_data = read_json_file("Dmi +\\weather.json")
+    
+    times, location, parameters = DMI.extract_parameters({'temperature': True, 'rain': True, 'wind_speed': True, 'time_interval': 35})
+    time_interval = DMI.get_time_interval(times)
+    location_points = DMI.get_location_points(location)
+    forecast_parameters = DMI.get_wanted_parameters(parameters)
+    
+    dependencies = DMI.create_dependencies(times=time_interval, location_points=location_points, parameters=forecast_parameters)
+    api_data = DMI.api_call_dmi(dependencies)
     converted_data = DMI.convert_weather_units(api_data)
     DMI.plot_weather(converted_data)
+
+    weather_list = DMI.get_weather_info(converted_data, api_data)
+    filtered_weather_info = DMI.filter_weather_info(weather_list)
+    print(filtered_weather_info)
+    
+
+    
 
     
