@@ -24,7 +24,11 @@ class WebSearch:
         search_query_convo = ConversationManager(promptname="search_query.txt").api_message_setup(user_input=user_input)
         search_query = ChatGPT.prompt(search_query_convo)
         return search_query
+    
+    def create_dependencies(search_query):
+        #create the wanted search info using chatGPT
+        print("memory nonceno nice")
 
 
 if __name__ == "__main__":
-    print(WebSearch.create_search_query("search the web to figure out how old dolphins can get"))
+    print(WebSearch.create_search_query(user_input="search the web to figure out how old dolphins can get"))

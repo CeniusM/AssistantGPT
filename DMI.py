@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 class DMI:
 
 
-    def create_response(user_input="temperature, rain, wind", GPT_parameters=None):
+    def create_response(GPT_parameters=None):
         print_bold("Getting weather data")
 
         #create parameters and make api call
@@ -18,7 +18,7 @@ class DMI:
         location_points = DMI.get_location_points(location)
         forecast_parameters = DMI.get_wanted_parameters(parameters)
         
-        dependencies = DMI.create_dependencies(times=time_interval, location=location_points, parameters=forecast_parameters)
+        dependencies = DMI.create_dependencies(times=time_interval, location_points=location_points, parameters=forecast_parameters)
         api_data = DMI.api_call_dmi(dependencies)
 
         #convert the data and get the weather info
@@ -36,20 +36,37 @@ class DMI:
 
     def extract_parameters(GPT_parameters):
         
-        days = "days"
-        hour = "hour"
-        duration = "duration"
-        times = [days, hour, duration]
+        #Default everything
+        day, time_of_day, time_interval = None, None, None
+        location = None
+        rain, temperature, wind_speed, wind_direction, lightning, snow = True, True, True, False, False, False
 
-        location = "location"
+        if GPT_parameters == None:
+            times = [day, time_of_day, time_interval]
+            parameters = [rain, temperature, wind_speed, wind_direction, lightning, snow] 
+            return times, location, parameters
+
+        location = GPT_parameters.get("location")
+
+        rain = GPT_parameters.get("rain")
+        temperature = GPT_parameters.get("temperature")
+        wind_speed = GPT_parameters.get("wind_speed" )
+        wind_direction = GPT_parameters.get("wind_direction" )
+        snow = GPT_parameters.get("snow")
+        lightning = GPT_parameters.get("lightning")
         
-        rain = True
-        temperature = True
-        wind_speed = True
-        wind_dir = False
-        lightnings = False
-        snow = False
-        parameters = [rain, temperature, wind_speed, wind_dir, lightnings, snow] 
+        day = GPT_parameters.get("day")
+        time_of_day = GPT_parameters.get("time_of_day")
+        time_interval = GPT_parameters.get("time_interval")
+
+
+        if rain and datetime.now().month in [11, 12, 1, 2, 3]: 
+            snow = True
+
+
+        times = [day, time_of_day, time_interval]
+
+        parameters = [rain, temperature, wind_speed, wind_direction, lightning, snow] 
 
         return times, location, parameters
     
@@ -66,15 +83,17 @@ class DMI:
             return DMI.get_current_location()["accurate_location"]
 
         #get long and latt from city name ()
-        pass
+        return DMI.get_current_location()["accurate_location"]
     
 
-    def get_time_interval(days = None, hour = None, duration = None):        
+    def get_time_interval(times):        
+        days, time_of_day, duration = times
+        
         now = datetime.now(timezone.utc).hour + 3
         print(now)
         time_until_midnight = 24 - now
 
-        if days == None and hour == None and (duration == None or duration == 0):
+        if days == None and time_of_day == None and (duration == None or duration == 0):
             print("Error: No inputted time parameters, Couldn't get time interval setting it to the next 24 hours")
             return [0,24]
 
@@ -95,16 +114,16 @@ class DMI:
                 if duration != None and duration != 0:
 
                     #duration + hour
-                    if hour == None:
+                    if time_of_day == None:
                         return [0, duration]
                     
                     #duration - hour
-                    start = hour-now + 24 * int(days[0])
+                    start = time_of_day-now + 24 * int(days[0])
                     return [start, start+duration]
                 
                 # -duration + hour
-                if hour != None:
-                    start = hour-now + 24 * int(days[0])
+                if time_of_day != None:
+                    start = time_of_day-now + 24 * int(days[0])
                     return [start, start+8]
 
             # -duration - hour
@@ -150,7 +169,7 @@ class DMI:
         return new_parameters
 
 
-    def create_dependencies( times: list, location: list, parameters: list) -> dict:
+    def create_dependencies(times: list, location_points: list, parameters: list) -> dict:
     
         # Current time and 12 hours from now and Format times for the API
         now = datetime.now(timezone.utc)  + timedelta(hours=times[0])
@@ -166,7 +185,7 @@ class DMI:
         api_key = get_DMI_key()      
 
         dependencies = {        
-            "coords": f"POINT({location[0]} {location[1]})",
+            "coords": f"POINT({location_points[0]} {location_points[1]})",
             "crs": "crs84",
             "parameter-name": f"{tech_parameters}",
             "datetime": f"{start_time}/{end_time}",
@@ -226,40 +245,45 @@ class DMI:
         cleaned_data = {"temperature": (temperatures, "C"), "rain": (rain, "mm/h")}
         unit_map = read_json_file("Dmi +\\parameter_unit_map.json")
 
-        #go through the data and get the weather info
-        # {name: [{max: (value, time)}, {min: (value, time)}, {avg: value}, unit]}
+        #go through the data and get the weather info 
 
         weather_info_list = [{"name": [{"max": ("value", "time")}, {"min": ("value", "time")}, {"avg": "value"}, "unit"]}]
 
         for element in cleaned_data.keys():
             name = element
             values = cleaned_data[element][0]
-            max_value = round(max(values), 1)
+            max_value =max(values)
             max_time = values.index(max_value) + hour
-            min_value = round(min(values), 1)
+            min_value =min(values)
             min_time = values.index(min_value) + hour
-            avg_value = round(sum(values)/len(values), 1)
+            avg_value = sum(values)/len(values)
             unit = cleaned_data[element][1]
-            weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
+            weather_info_list.append({name: [{"max": (round(max_value,1), round(max_time,1))}, {"min": (round(min_value,1), round(min_time,1))}, {"avg": round(avg_value,1)}, unit]})
+
         
         for element in weather_data.keys():
             if element != "temperature-2m" and element != "rain-precipitation-rate":
                 name = element
                 values = weather_data[element]
-                max_value = round(max(values), 1)
+                max_value =max(values)
                 max_time = values.index(max_value) + hour
-                min_value = round(min(values), 1)
+                min_value =min(values)
                 min_time = values.index(min_value) + hour
-                avg_value = round(sum(values)/len(values), 1)
+                avg_value = sum(values)/len(values)
                 unit = unit_map[element]
-                weather_info_list.append({name: [{"max": (max_value, max_time)}, {"min": (min_value, min_time)}, {"avg": avg_value}, unit]})
+                weather_info_list.append({name: [{"max": (round(max_value,1), round(max_time,1))}, {"min": (round(min_value,1), round(min_time,1))}, {"avg": round(avg_value,1)}, unit]})
 
         return weather_info_list
                 
     def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
-        from ChatGPT import prompt
-        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(api_data=weather_info_list)
+
+        conversation_history = [ #for now - debug
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        ]
+
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(conversation=conversation_history, api_data=weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo)
 
         return weather_info
@@ -303,7 +327,8 @@ class DMI:
 
 if __name__ == "__main__":
 
-    print(DMI.get_time_interval(days=0, hour=None,  duration=8))
+    print(DMI.get_current_location())
+    print(DMI.get_time_interval(["1", 8, 12]))
 
     
     parameters, time = DMI.get_wanted_parameters("temperature, rain, wind")

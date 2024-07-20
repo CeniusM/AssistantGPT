@@ -21,7 +21,7 @@
 
 
                     "day" : {
-                        "type" : "list",
+                        "type" : "string",
                         "description" : "Enter the number of relative days, e.g. today is [0], the day after tomorrow is [2], and in four days is [4], or enter the amount of days using [start, end], so a the next week would be [0, 7]"
                     },
                     "time_interval" : {

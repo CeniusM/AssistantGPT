@@ -38,14 +38,6 @@ class ChatGPT:
                     tool_choice = "auto" #automaticly chose if functions should be called
                 )
 
-            #     dump = json.dumps(completion, indent=4)
-            #     write_json_file("mt1.json", dump)
-            # except Exception as e:
-            #     print(e)                   
-            
-            # completion = openai.types.chat.chat_completion.ChatCompletion(id='chatcmpl-9lJD2QcFMyEZIvXntHsj34xv0aCnI', choices=[Choice(finish_reason='tool_calls', index=0, logprobs=None, message=ChatCompletionMessage(content=None, role='assistant', function_call=None, tool_calls=[ChatCompletionMessageToolCall(id='call_AykOpKR572qB4fjD25UhYW5t', function=Function(arguments='{}', name='look_through_memory'), type='function')]))], created=1721062284, model='gpt-3.5-turbo-0125', object='chat.completion', service_tier=None, system_fingerprint=None, usage=CompletionUsage(completion_tokens=11, prompt_tokens=358, total_tokens=369)) # type: ignore
-            # completion = chat_completion
-
             total_tokens = completion.usage.total_tokens
             cost = round((total_tokens*0.002)/1000, 10)
             ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
@@ -54,7 +46,7 @@ class ChatGPT:
             tool_calls = completion.choices[0].message.tool_calls       
 
         else:
-            completion = read_json_file("response.json")
+            completion = read_json_file("Completions examples\\GPT_weather.json")
             tool_calls = completion["choices"][0]["message"]["tool_calls"]
             response = completion["choices"][0]["message"]["content"]
 
@@ -79,7 +71,7 @@ class ChatGPT:
                 "web_search" : web_search,
                 "adjust_microphone" : adjust_mic
             }
-            conversation_history.append(response)  # extend conversation with assistant's reply
+            #conversation_history.append(completion.choices[0].message)  # extend conversation with assistant's reply
             # send the info for each function call and function response to the model
             for tool_call in tool_calls:
                 if debug:
@@ -91,24 +83,11 @@ class ChatGPT:
                 function_to_call = available_functions[function_name]
 
                 if function_name == "get_weather_forecast":
-                    function_response = function_to_call(
-                        location = function_args.get("location"),
-                        rain = function_args.get("rain"),
-                        temperature = function_args.get("temperature"),
-                        wind_speed = function_args.get("wind_speed" ),
-                        wind_dir = function_args.get("wind_direction" ),
-                        snow = function_args.get("snow"),
-                        lightning = function_args.get("lightning"),
-                        day = function_args.get("day"),
-                        time_interval = function_args.get("time_interval"),
-                        time_of_day = function_args.get("time_of_day")
-                        )
+                    function_response = function_to_call(GPT_parameters = function_args)
                 elif function_name == "look_through_memory":
                     function_response = function_to_call()
                 elif function_name == "web_search":
-                    function_response = function_to_call(
-                        search_query = function_args.get("search_query")
-                        )                 
+                    function_response = function_to_call(search_query = function_args.get("search_query"))                 
                 elif function_name == "adjust_microphone": #if no input or output is needed
                     function_to_call()
                     continue
@@ -143,8 +122,9 @@ class ChatGPT:
 if __name__ == "__main__":
     conversation_history = [
         {"role": "system", "content": "You are a helpful assistant."},
-        #{"role": "user", "content": "What's the weather like today?"}
-        #{"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
-        {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
+        # {"role": "user", "content": "What's the weather like today?"}
+        {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
+        # {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
+        # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
     ChatGPT.smart_prompt(conversation_history, debug=True)

@@ -1,0 +1,35 @@
+{
+    "id": "chatcmpl-9n3Hndqejg10POXQsLhyXPZHz6zy3",
+    "choices": [
+        {
+            "finish_reason": "tool_calls",
+            "index": 0,
+            "logprobs": null,
+            "message": {
+                "content": null,
+                "role": "assistant",
+                "function_call": null,
+                "tool_calls": [
+                    {
+                        "id": "call_OoVvdqj4k73nGpxpjTJx5ndC",
+                        "function": {
+                            "arguments": "{\"search_query\":\"maximum age of dolphins\"}",
+                            "name": "web_search"
+                        },
+                        "type": "function"
+                    }
+                ]
+            }
+        }
+    ],
+    "created": 1721477731,
+    "model": "gpt-3.5-turbo-0125",
+    "object": "chat.completion",
+    "service_tier": null,
+    "system_fingerprint": null,
+    "usage": {
+        "completion_tokens": 18,
+        "prompt_tokens": 348,
+        "total_tokens": 366
+    }
+}
