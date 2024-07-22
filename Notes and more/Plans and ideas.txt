@@ -1,16 +1,25 @@
-## Brainstorm
+### Brainstorm
+
+##small fixes
+Fix overload error, to big conversations in CM.get()
+Change mic to not cut of sentence after 5 sec
+Improve system prompt
+Make better error handling (offline)
+Load conversations
+
+
+##projects
 
 interupt
 writable input and nonverbal commands
 roles (caracters)
 "suit-up"
 navigation
-make check_text intelligent
 make web agent that can more than google searching. Finding train arrivel times, check email, reference yt vids and more.
 Connect to phone via app or website, or maybe google assistant.
 Load data (personal profile)
-fix mic
-
+location for DMI
+Smart-gpt  use multithreating for a faster response -audible response
 
 ## Doing
 
@@ -23,3 +32,4 @@ money and time-tracker
 dmi
 memory
 summaries
+make check_text intelligent (smart gpt)

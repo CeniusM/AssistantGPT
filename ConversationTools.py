@@ -21,9 +21,7 @@ def clean_conversations():
             os.remove(path)
             filenum = int(filename.split("_")[1].split(".")[0])
             removed_list.append(filenum)
-            print(f"Removed {filename}")
-    if len(removed_list) > 3:
-        print(f"Removed {removed_list}")
+    print(f"Removed conversations: {removed_list}")
     
 # renumber the files
 def renumber_conversations():
@@ -34,6 +32,11 @@ def renumber_conversations():
     def extract_number(filename):
         match = re.search(r'(\d+)', filename)
         return int(match.group(0)) if match else 0
+    
+    # Get the current conversation number from the global conversation manager
+    conversation_manager = set_global_conversation_manager()
+    current_conversation_name = conversation_manager.conversation_name
+    current_conversation_num = int(current_conversation_name.split("_")[1].split(".")[0])
 
     for filename in sorted(os.listdir("Conversations"), key=extract_number):
 
@@ -47,6 +50,9 @@ def renumber_conversations():
         new_path = os.path.join("Conversations", new_filename)
         os.rename(path, new_path)
         print(f"{filenum} -> {current_num}")
+        if filenum == current_conversation_num:
+            conversation_manager.conversation_name = new_path
+
         renumbered = True
         current_num += 1
 
@@ -60,7 +66,10 @@ def summarize_conversations():
     summarized = False
     convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
 
-    while os.path.exists(convpath):
+    conversation_manager = set_global_conversation_manager()
+    current_conversation_name = conversation_manager.conversation_name
+
+    while os.path.exists(convpath) and convpath != current_conversation_name:
 
         conversation = read_json_file(convpath)
         
@@ -79,13 +88,14 @@ def summarize_conversations():
                 summary = ConversationManager.create_summary(summary_conversation)
                 conversation.append({"role": "summary", "content": f"{summary}"})
                 write_json_file(convpath, conversation)
+                summarized = True
                 break
 
         convnum += 1
         convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
 
     if summarized:
-        print("Summarized all conversations")
+        print("Summarized all conversations\n")
 
 
 def format_conversations():

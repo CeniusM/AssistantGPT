@@ -1,6 +1,6 @@
 from ConversationManager import *
-from ChatGPT import *
 from FileManager import *
+from ConsoleHelper import *
 
 import os
 import ast
@@ -8,19 +8,18 @@ import ast
 
 class Memory:
     #made to manage memory
-    def create_response(user_input):
+    def create_response():
+        print_bold("Checking memory")
+
         #create parameters and make api call
         all_summaries_dict = Memory.get_all_summaries()
-        conv_numbers = Memory.create_conv_numbers(user_input=user_input, all_summaries_dict=all_summaries_dict)
-        filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
-        
-        
+        conv_numbers = Memory.get_conv_numbers(all_summaries_dict)
+
         #Get and manage conversation data
-        conv_data = Memory.get_conv_data(filtered_conv_numbers)
-        conv_info = Memory.search_through_conversations(user_input, conv_data)
+        conv_data = Memory.get_conv_data(conv_numbers)
+        conv_info = Memory.search_through_conversations(conv_data)
         
-        altered_user_input = user_input+"\n Memory info, if needed: "+conv_info
-        return altered_user_input
+        return conv_info
     
     
     def get_all_summaries():
@@ -42,19 +41,18 @@ class Memory:
 
         return all_summaries_dict
 
-    def create_conv_numbers(user_input, all_summaries_dict):
+    def create_conv_numbers(all_summaries_dict):
         #create the wanted search info using chatGPT
-        search_prompt = f'User input: {user_input}\nAll summaries: {all_summaries_dict}'
-        conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(search_prompt)
-        conv_numbers = ChatGPT.prompt(conv_numbers_convo, silent=True, temperature=0.2)
+        conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(api_data=all_summaries_dict)
+        conv_numbers = ChatGPT.prompt(conv_numbers_convo)
 
-        return conv_numbers
+        return conv_numbers   
         
     def filter_conv_numbers(conv_numbers):
         
         #check if the conv_numbers are already a list or number
         try:
-            conv_numbers_eval =  ast.literal_eval(conv_numbers)
+            conv_numbers_eval = ast.literal_eval(conv_numbers)
             if type(conv_numbers_eval) == int:
                 return [conv_numbers_eval]
             elif type(conv_numbers_eval) == list:
@@ -68,9 +66,20 @@ class Memory:
                 char = char.replace(".", "")
                 if char.isnumeric():
                     formatted_conv_numbers.append(int(char))
-        
+
         return formatted_conv_numbers
 
+    def get_conv_numbers(all_summaries_dict):
+        for retry in range(3):    
+            conv_numbers = Memory.create_conv_numbers(all_summaries_dict)
+            filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
+
+            if filtered_conv_numbers != [] and conv_numbers != "None" and conv_numbers != [""]:
+                print(f"Looking in conversations: {filtered_conv_numbers}")
+                return filtered_conv_numbers
+
+        print("No usable conversations found.")
+        return None
 
     def get_conv_data(conv_numbers):
         #get the conversation data
@@ -84,13 +93,12 @@ class Memory:
                 print(f"Error: The file at {convo_path} was not found.")
         return conv_data
 
-    def search_through_conversations(user_input, conv_data):
+    def search_through_conversations(conv_data):
         #use the conversation data to and ChatGPT to search through the conversations
-        search_prompt = f'User input: {user_input}\nConversation data: {conv_data}'
-        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(search_prompt)
-        search_info = ChatGPT.prompt(search_convo, silent=True, temperature=0.2)
+        search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(api_data=conv_data)
+        search_info = ChatGPT.prompt(search_convo)
         return search_info
     
 if __name__ == "__main__":
     # print(Memory.create_response("based on what we've talked about earlier, how old am i?"))
-    print(Memory.create_response("based on what we've talked about earlier, what is your favorite pet?"))
+    print(Memory.create_response())

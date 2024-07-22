@@ -4,32 +4,33 @@ from SmartMic import *
 from DMI import *
 from Memory import *
 from WebSearch import *
+from ConversationManager import *
 
 
 
 def check_text(text):
-    
-    if check_text_for_ambient_noise(text):
+    adjust_mic , web_search, weather_forecast, remember = check_text_for_key_words(text)
+    #run text commands
+    if adjust_mic:
         SmartMic.adjust_for_ambient_noise()
-        print_bold("Adjusted for ambient noise")
-
-    #if check_text_for_empty(text):
-        #return continue
-
-    if check_text_for_web_search(text):
-        print_bold("Searching.")
-        #text = WebSearch.create_response(text)
-
-
-    if check_text_for_weather(text):
-        print_bold("Getting weather data")
-        text = DMI.create_response(text)
-
-    if check_text_for_memory(text):
-        print_bold("Checking memory")
-        text = Memory.create_response(text)
+    if web_search:
+        text = WebSearch.create_response()
+    if weather_forecast:
+        text = DMI.create_response()
+    if remember:
+        text = Memory.create_response()
 
     return text
+
+def check_text_for_key_words(text):
+
+    #check for all keywords
+    adjust_mic =check_text_for_ambient_noise(text)
+    web_search = check_text_for_web_search(text)
+    weather_forecast = check_text_for_weather(text)
+    remember = check_text_for_memory(text)
+
+    return adjust_mic , web_search, weather_forecast, remember
 
 
 def word_in_text(text, words):
@@ -37,13 +38,10 @@ def word_in_text(text, words):
     words = [" "+word.lower() for word in words]
     return any(word in text for word in words)
 
-
-
 def check_text_for_exit(text):
     #check for exit words
     byewords = ["exit", "quit", "goodbye", "farewell"]
     if word_in_text(text, byewords):
-        print_bold("\nGoodbye!\n")
         return True
 
 def check_text_for_ambient_noise(text):

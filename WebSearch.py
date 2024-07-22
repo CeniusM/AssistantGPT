@@ -1,28 +1,34 @@
-from ChatGPT import *
 from ConversationManager import *
+from ConsoleHelper import *
 
 class WebSearch:
         
-    def create_response(user_input="search the web to figure out how old dolphins can get"):
+    def create_response(user_input="search the web to figure out how old dolphins can get", search_query=None):
+        print_bold("Searching.")
+        
         #create parameters and make api call
-        search_query = WebSearch.create_search_query(user_input=user_input)
-        dependencies = WebSearch.create_dependencies()
+        if search_query == None:
+            search_query = WebSearch.create_search_query(user_input=user_input)
+        dependencies = WebSearch.create_dependencies(search_query)
         api_data = WebSearch.api_call(dependencies)
 
         #convert the data from the search
         converted_data = WebSearch.convert_api_data(api_data)
         search_info = WebSearch.manage_data(converted_data)
         
-        altered_user_input = user_input+"\n Search info, if needed: "+search_info
-        return altered_user_input 
+        return search_info
 
 
     def create_search_query(user_input):
         #create the wanted search info using chatGPT
-        search_query_convo = ConversationManager(promptname="search_query.txt").api_convo_setup(user_input)
-        search_query = ChatGPT.prompt(search_query_convo, silent=True, temperature=0.2)
+        search_query_convo = ConversationManager(promptname="search_query.txt").api_message_setup(user_input=user_input)
+        search_query = ChatGPT.prompt(search_query_convo)
         return search_query
+    
+    def create_dependencies(search_query):
+        #create the wanted search info using chatGPT
+        raise NotImplementedError("This method is not implemented yet.")
 
 
 if __name__ == "__main__":
-    print(WebSearch.create_search_query("search the web to figure out how old dolphins can get"))
+    print(WebSearch.create_search_query(user_input="search the web to figure out how old dolphins can get"))
