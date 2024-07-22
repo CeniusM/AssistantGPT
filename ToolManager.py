@@ -16,5 +16,5 @@ def web_search(search_query):
     return WebSearch.create_response(search_query=search_query)
     
 def adjust_mic():
-    SmartMic.adjust_for_ambient_noise() #make work with
+    SmartMic().adjust_for_ambient_noise()
 

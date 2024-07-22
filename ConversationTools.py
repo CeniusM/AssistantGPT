@@ -21,9 +21,8 @@ def clean_conversations():
             os.remove(path)
             filenum = int(filename.split("_")[1].split(".")[0])
             removed_list.append(filenum)
-            print(f"Removed {filename}")
     if len(removed_list) > 3:
-        print(f"Removed {removed_list}")
+        print(f"Removed conversations: {removed_list}")
     
 # renumber the files
 def renumber_conversations():
@@ -79,18 +78,19 @@ def summarize_conversations():
                 summary = ConversationManager.create_summary(summary_conversation)
                 conversation.append({"role": "summary", "content": f"{summary}"})
                 write_json_file(convpath, conversation)
+                summarized = True
                 break
 
         convnum += 1
         convpath = os.path.join("Conversations\\conversation_"+ str(convnum)+".json")
 
     if summarized:
-        print("Summarized all conversations")
+        print("Summarized all conversations\n")
 
 
 def format_conversations():
     clean_conversations()
-    renumber_conversations()
+    # renumber_conversations() #ruined current conversation's numbering
     summarize_conversations()
 
 
@@ -124,3 +124,4 @@ def print_conversation(num):
 
 if __name__ == "__main__" and True:
     format_conversations()
+    renumber_conversations()

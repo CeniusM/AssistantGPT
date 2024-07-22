@@ -13,29 +13,27 @@ conversation_manager.convo_setup()
 mic = SmartMic()
 
 SmartSpeaker.beep()
+try:
+        
+    while True:
 
-while True:
-    audio = mic.listen()
+        text = mic.listen_and_interpret()
 
-    text = mic.interpret_speech(audio)
+        if check_text_for_exit(text):
+            break
 
-    if text is None:
-        print_warning("Did not get what you said (no text)")
-        continue
+        conversation_formatted = conversation_manager.add_and_get("user", text)
 
-    if check_text_for_exit(text):
-        break
-    # text = check_text(text)
+        response = ChatGPT.smart_prompt(conversation_formatted)
 
-    conversation_formatted = conversation_manager.add_and_get("user", text)
+        SmartSpeaker.play_voice(response)
 
-    response = ChatGPT.smart_prompt(conversation_formatted)
+        conversation_manager.add_paragraph("assistant", response)
 
-    SmartSpeaker.play_voice(response)
+        conversation_manager.save()
 
-    conversation_manager.add_paragraph("assistant", response)
-
-    conversation_manager.save()
+except Exception as e:
+    print_error(f"Something went wrong, closing. Error: {e}")
 
 conversation_manager.save(closing=True)
 print_bold("\nGoodbye!\n")
