@@ -54,6 +54,9 @@ class ConversationManager:
         header = convo.pop(0)  # Remove the first element (header)
         convo.insert(len(convo) - 1, header)  # Insert the header before the last element
         
+        while len(str(convo)) > 75000:
+            convo.pop(0)  # Remove the first element if the total length exceeds 32770 characters
+
         return convo  # Return the modified list
 
     def add_and_get(self, role, content):

@@ -61,8 +61,8 @@ class SmartMic:
                 except Exception as e:
                     print_error(f"Error in listening and interpretting, retrying... Error: {e}")
             
-            print_error("Failed to listen and interpret speech, for the third time. Do you want to try exit?")
-            if any(["n", "no", "exit", "No", "N", "q"] in input("y or n ?")):
+            print_error("Failed to listen and interpret speech, for the third time. Do you want to exit?")
+            if not str(input("y or n ?")) in ["n", "na", "no", "exit", "No", "N", "q"]:
                 return "exit"
     
             

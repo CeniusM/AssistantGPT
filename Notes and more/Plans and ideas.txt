@@ -1,7 +1,6 @@
 ### Brainstorm
 
 ##small fixes
-Fix overload error, to big conversations in CM.get()
 Change mic to not cut of sentence after 5 sec
 Improve system prompt
 Make better error handling (offline)

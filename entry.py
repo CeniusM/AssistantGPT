@@ -8,13 +8,11 @@ from ConversationTools import *
 from TextChecker import *
 
 conversation_manager = set_global_conversation_manager()
-
 conversation_manager.convo_setup()
 mic = SmartMic()
-
 SmartSpeaker.beep()
+
 try:
-        
     while True:
 
         text = mic.listen_and_interpret()
@@ -23,7 +21,9 @@ try:
         
         conversation_formatted = conversation_manager.add_and_get("user", text)
 
-        response = ChatGPT.smart_prompt(conversation_formatted)
+        print(len(str(conversation_formatted)), len(conversation_formatted))
+
+        response = ChatGPT.prompt(conversation_formatted)
 
         SmartSpeaker.play_voice(response)
 
@@ -34,5 +34,5 @@ try:
 except Exception as e:
     print_error(f"Something went wrong, closing. Error: {e}")
 
-conversation_manager.save(closing=True)
+#conversation_manager.save(closing=True)
 print_bold("\nGoodbye!\n")
