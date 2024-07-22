@@ -7,14 +7,14 @@ from ConversationManager import *
 from ConversationTools import *
 from TextChecker import *
 
-conversation_manager = ConversationManager()
+conversation_manager = set_global_conversation_manager()
+
 conversation_manager.convo_setup()
 mic = SmartMic()
-running = True  #MAKE CHECK TEXT CHECK FOR Text == None AND SET RUNNING TO FALSE
 
 SmartSpeaker.beep()
 
-while running:
+while True:
     audio = mic.listen()
 
     text = mic.interpret_speech(audio)
@@ -23,9 +23,9 @@ while running:
         print_warning("Did not get what you said (no text)")
         continue
 
-    if check_text_for_exit(text): #MAKE THIS FUNCTION CHECK FOR Text == None AND SET RUNNING TO FALSE
+    if check_text_for_exit(text):
         break
-    text = check_text(text)
+    # text = check_text(text)
 
     conversation_formatted = conversation_manager.add_and_get("user", text)
 

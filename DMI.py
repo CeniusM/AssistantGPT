@@ -275,15 +275,7 @@ class DMI:
                 
     def filter_weather_info(weather_info_list):
         #create a list of the wanted weather info using chatGPT
-
-        conversation_history = [ #for now - debug
-        {"role": "system", "content": "You are a helpful assistant."},
-        # {"role": "user", "content": "What will the wind be like from tomorrow morning at 8 to 12 hours later in Bork Havn?"}
-        {"role": "user", "content": "What will the weather be like the next 5 hours?"}
-        ]
-
-
-        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(conversation=conversation_history, api_data=weather_info_list)
+        weather_convo = ConversationManager(promptname="weather_sort.txt").api_convo_setup(api_data=weather_info_list)
         weather_info = ChatGPT.prompt(weather_convo)
 
         return weather_info

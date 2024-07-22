@@ -86,7 +86,7 @@ class ChatGPT:
                     function_response = function_to_call(search_query = function_args.get("search_query"))                 
                 elif function_name == "adjust_microphone": #if no input or output is needed
                     function_to_call()
-                    continue
+                    function_response = "Microphone adjusted"
                 
                 conversation_history.append(
                     {
