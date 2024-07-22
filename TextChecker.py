@@ -8,35 +8,19 @@ from ConversationManager import *
 
 
 
-def check_text(text, smart_check=False):
-
-    '''
-    #check if smart_check and use ChatGPT's function call to check the text
-    if smart_check:
-        convo = ConversationManager(promptname="smart_check.txt").api_convo_setup(text)
-        adjust_mic , web_search, weather_forecast, remember = ChatGPT.check_text(convo, "smart_check.txt")
-    
-    else:    
-        adjust_mic , web_search, weather_forecast, remember = check_text_for_key_words(text)
-
+def check_text(text):
+    adjust_mic , web_search, weather_forecast, remember = check_text_for_key_words(text)
     #run text commands
     if adjust_mic:
         SmartMic.adjust_for_ambient_noise()
     if web_search:
-        text = WebSearch.create_response(text)
+        text = WebSearch.create_response()
     if weather_forecast:
-        text = DMI.create_response(text)
+        text = DMI.create_response()
     if remember:
-        text = Memory.create_response(text)
-
-    '''
+        text = Memory.create_response()
 
     return text
-
-def word_in_text(text, words):
-    text = " " + text
-    words = [" "+word.lower() for word in words]
-    return any(word in text for word in words)
 
 def check_text_for_key_words(text):
 
@@ -47,6 +31,12 @@ def check_text_for_key_words(text):
     remember = check_text_for_memory(text)
 
     return adjust_mic , web_search, weather_forecast, remember
+
+
+def word_in_text(text, words):
+    text = " " + text
+    words = [" "+word.lower() for word in words]
+    return any(word in text for word in words)
 
 def check_text_for_exit(text):
     #check for exit words

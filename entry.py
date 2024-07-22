@@ -19,9 +19,8 @@ try:
 
         text = mic.listen_and_interpret()
 
-        if check_text_for_exit(text):
-            break
-
+        if check_text_for_exit(text): break
+        
         conversation_formatted = conversation_manager.add_and_get("user", text)
 
         response = ChatGPT.smart_prompt(conversation_formatted)

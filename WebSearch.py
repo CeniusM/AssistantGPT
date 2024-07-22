@@ -27,7 +27,7 @@ class WebSearch:
     
     def create_dependencies(search_query):
         #create the wanted search info using chatGPT
-        print("memory nonceno nice")
+        raise NotImplementedError("This method is not implemented yet.")
 
 
 if __name__ == "__main__":
