@@ -1,4 +1,14 @@
-## Brainstorm
+### Brainstorm
+
+##small fixes
+Fix overload error, to big conversations in CM.get()
+Change mic to not cut of sentence after 5 sec
+Improve system prompt
+Make better error handling (offline)
+Load conversations
+
+
+##projects
 
 interupt
 writable input and nonverbal commands
@@ -14,7 +24,6 @@ Smart-gpt  use multithreating for a faster response -audible response
 ## Doing
 
 webacces
-make check_text intelligent (smart gpt)
 graphics (pygames?)
 
 
@@ -23,3 +32,4 @@ money and time-tracker
 dmi
 memory
 summaries
+make check_text intelligent (smart gpt)

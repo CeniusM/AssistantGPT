@@ -13,11 +13,10 @@ class Memory:
 
         #create parameters and make api call
         all_summaries_dict = Memory.get_all_summaries()
-        conv_numbers = Memory.create_conv_numbers(all_summaries_dict)
-        filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
+        conv_numbers = Memory.get_conv_numbers(all_summaries_dict)
 
         #Get and manage conversation data
-        conv_data = Memory.get_conv_data(filtered_conv_numbers)
+        conv_data = Memory.get_conv_data(conv_numbers)
         conv_info = Memory.search_through_conversations(conv_data)
         
         return conv_info
@@ -47,13 +46,13 @@ class Memory:
         conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(api_data=all_summaries_dict)
         conv_numbers = ChatGPT.prompt(conv_numbers_convo)
 
-        return conv_numbers
+        return conv_numbers   
         
     def filter_conv_numbers(conv_numbers):
         
         #check if the conv_numbers are already a list or number
         try:
-            conv_numbers_eval =  ast.literal_eval(conv_numbers)
+            conv_numbers_eval = ast.literal_eval(conv_numbers)
             if type(conv_numbers_eval) == int:
                 return [conv_numbers_eval]
             elif type(conv_numbers_eval) == list:
@@ -67,9 +66,20 @@ class Memory:
                 char = char.replace(".", "")
                 if char.isnumeric():
                     formatted_conv_numbers.append(int(char))
-        
+
         return formatted_conv_numbers
 
+    def get_conv_numbers(all_summaries_dict):
+        for retry in range(3):    
+            conv_numbers = Memory.create_conv_numbers(all_summaries_dict)
+            filtered_conv_numbers = Memory.filter_conv_numbers(conv_numbers)
+
+            if filtered_conv_numbers != [] and conv_numbers != "None" and conv_numbers != [""]:
+                print(f"Looking in conversations: {filtered_conv_numbers}")
+                return filtered_conv_numbers
+
+        print("No usable conversations found.")
+        return None
 
     def get_conv_data(conv_numbers):
         #get the conversation data

@@ -7,7 +7,7 @@ class ChatGPT:
 
     total_cost = 0
     
-    def prompt(conversation_history, temperature=0.2):
+    def prompt(conversation_history, temperature=0.2, silent=True):
         openai.api_key = get_GPT_key()
 
         completion = openai.chat.completions.create(
@@ -21,6 +21,8 @@ class ChatGPT:
         ChatGPT.total_cost = round(ChatGPT.total_cost + cost, 10)
         
         response = completion.choices[0].message.content
+        if not silent:
+            print_bold(f"\n{response}\n")
         return response
 
 
@@ -113,4 +115,4 @@ if __name__ == "__main__":
         # {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
         # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
-    print(ChatGPT.smart_prompt(conversation_history))
+    print(ChatGPT.smart_prompt(conversation_history, silent=False))

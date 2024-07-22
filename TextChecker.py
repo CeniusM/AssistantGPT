@@ -42,7 +42,6 @@ def check_text_for_exit(text):
     #check for exit words
     byewords = ["exit", "quit", "goodbye", "farewell"]
     if word_in_text(text, byewords):
-        print_bold("\nGoodbye!\n")
         return True
 
 def check_text_for_ambient_noise(text):
