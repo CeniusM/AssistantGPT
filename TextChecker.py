@@ -34,7 +34,7 @@ def check_text_for_key_words(text):
 
 
 def word_in_text(text, words):
-    text = " " + text
+    text = " " + text.lower()
     words = [" "+word.lower() for word in words]
     return any(word in text for word in words)
 

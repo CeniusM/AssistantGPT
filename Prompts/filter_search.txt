@@ -1,0 +1,2 @@
+You are given search results for a user's query. Summarize these results to directly answer the user's question.
+Provide ONLY the answer to the question. Be concise and informative. Include key facts and data.

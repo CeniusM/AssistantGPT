@@ -9,7 +9,7 @@ class SmartMic:
 
         self.adjust_for_ambient_noise()
 
-    def listen(self, threshold=5, timeout=10):
+    def listen(self, threshold=20, timeout=10):
         try:
             with self.mic as source:
                 print_info("Listening...")
