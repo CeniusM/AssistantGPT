@@ -10,6 +10,7 @@ class WebSearch:
         if search_query == None:
             search_query = WebSearch.create_search_query(user_input=user_input)
         dependencies = WebSearch.create_dependencies(search_query)
+        return "web search function not implemented yet"
         api_data = WebSearch.api_call(dependencies)
 
         #convert the data from the search
@@ -27,7 +28,7 @@ class WebSearch:
     
     def create_dependencies(search_query):
         #create the wanted search info using chatGPT
-        raise NotImplementedError("This method is not implemented yet.")
+        pass
 
 
 if __name__ == "__main__":

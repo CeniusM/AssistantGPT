@@ -69,13 +69,17 @@ class ConversationManager:
 
         if closing:
 
-            summary_conversation = self.conversation.copy()
-            summary = ConversationManager.create_summary(summary_conversation)
+            try:
+                summary_conversation = self.conversation.copy()
+                summary = ConversationManager.create_summary(summary_conversation)
+            except:
+                summary = None
 
             #adds on the prize and the date and time at the end of the json file
             self.conversation.append({"role": "Time Tracker", "Time and day": f"{time.asctime(time.localtime(time.time()))}"})
             self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
-            self.conversation.append({"role": "summary", "content": f"{summary}"})
+            if summary != None:
+                self.conversation.append({"role": "summary", "content": f"{summary}"})
         
         write_json_file(path, self.conversation)
 

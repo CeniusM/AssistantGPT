@@ -32,7 +32,7 @@ try:
         conversation_manager.save()
 
 except Exception as e:
-    print_error(f"Something went wrong, closing. Error: {e}")
+    error_handling(e)
 
-#conversation_manager.save(closing=True)
+conversation_manager.save(closing=True)
 print_bold("\nGoodbye!\n")
