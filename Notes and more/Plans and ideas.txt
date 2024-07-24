@@ -3,7 +3,6 @@
 ##small fixes
 Change mic to not cut of sentence after 5 sec
 Improve system prompt
-Make better error handling (offline)
 Load conversations
 fix color reset in print 
 

@@ -101,7 +101,7 @@ class ChatGPT:
 
 
             
-            second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5)
+            second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=False)
             return second_response
 
     

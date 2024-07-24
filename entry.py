@@ -21,9 +21,7 @@ try:
         
         conversation_formatted = conversation_manager.add_and_get("user", text)
 
-        print(len(str(conversation_formatted)), len(conversation_formatted))
-
-        response = ChatGPT.prompt(conversation_formatted)
+        response = ChatGPT.smart_prompt(conversation_formatted)
 
         SmartSpeaker.play_voice(response)
 
