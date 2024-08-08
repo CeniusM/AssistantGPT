@@ -1,4 +1,4 @@
-from ToolConstructor import *
+from Tooling.ToolConstructor import *
 
 def get_weather_forecast_description():
     getWeather = ToolDescription("get_weather_forecast", "Get the weather forecast")
