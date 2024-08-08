@@ -1,58 +1,35 @@
 from ToolConstructor import *
 
-def testing():
-
-    # getWeather = ToolDescription(
-    #     name="get_weather_forecast",
-    #     description="Get the weather forecast")
+def get_weather_forecast_description():
+    getWeather = ToolDescription("get_weather_forecast", "Get the weather forecast")
+    getWeather.add_parameter_description("only fill paramereters that the user asks for. Default is rain, temperature and wind_speed set to true, and the time interval for the next 24 hours")
     
-    # # getWeather.add_parameters(
-    # #     description="description"
-    # #     arguments=
-    # #     [
-    # #         { "rain", bool }
-    # #         { "temperature", bool }
-    # #         { "wind_speed", bool }
-    # #         { "wind_direction", bool }
-    # #         { "snow", bool }
-    # #         { "lightning", bool }
-    # #     ]
-    # # )
-    
-    # getWeather.add_parameter_description(
-    #     "only fill paramereters that the user asks for. Default is rain, temperature and wind_speed set to true, and the time interval for the next 24 hours")
+    getWeather["location"] = str, "The city"
 
-    # getWeather.add_parameter(
-    #     "location",
-    #     str)
-    
-    # getWeather.add_parameter("rain", bool)
-    # getWeather.add_parameter("temperature", bool)
-    # getWeather.add_parameter("wind_speed", bool)
-    # getWeather.add_parameter("wind_direction", bool)
-    # getWeather.add_parameter("snow", bool)
-    # getWeather.add_parameter("lightning", bool)
+    getWeather["rain"] = bool
+    getWeather["temperature"] = bool
+    getWeather["wind_speed"] = bool
+    getWeather["wind_direction"] = bool
+    getWeather["snow"] = bool
+    getWeather["lightning"] = bool
 
-    # getWeather.add_parameter(
-    #     "day", 
-    #     str, 
-    #     "Enter the number of relative days, e.g. today is [0], the day after tomorrow is [2], and in four days is [4], or enter the amount of days using [start, end], so a the next week would be [0, 7]")
+    getWeather["day"] = str, "Enter the number of relative days, e.g. today is [0], the day after tomorrow is [2], and in four days is [4], or enter the amount of days using [start, end], so a the next week would be [0, 7]"
 
-    # getWeather.add_parameter(
-    #     "time_interval",
-    #     str,
-    #     "The amount of hours for the forecast, e.g. this evening could be interpreted as '6'")
-    
-    # getWeather.add_parameter(
-    #     "time_of_day",
-    #     str,
-    #     "Enter the number of relative days, e.g. today is [0], the day after tomorrow is [2], and in four days is [4], or enter the amount of days using [start, end], so a the next week would be [0, 7]")
+    getWeather["time_interval"] = int, "The amount of hours for the forecast, e.g. this evening could be interpreted as '6'"
 
-    
+    getWeather["time_of_day"] = int, "witch hour on the day, the interval starts, e.g. this evening would be '17'"
 
-    volumeTool = ToolDescription("volume", "Changes the pc volume")
-    
-    volumeTool.add_parameter("amplitude", int, "number from 0 to 100")
+    return getWeather.to_json()
 
+def adjust_microphone_description():
+    return ToolDescription("adjust_microphone", "Adjust the microphone for background noise").to_json()
 
-    print("yoyo")
+def look_through_memory_description():
+    return ToolDescription("look_through_memory", "Adjust the microphone for background noise").to_json()
+
+def web_search_description():
+    webSearch = ToolDescription("web_search", "Use a web query to get wanted information")
+
+    webSearch["search_query", True] = str, "The search query that can be used for a google search, e.g. 'birth rate denmark'"
+
+    return webSearch.to_json()
