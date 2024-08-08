@@ -8,13 +8,11 @@ from ConversationTools import *
 from TextChecker import *
 
 conversation_manager = set_global_conversation_manager()
-
 conversation_manager.convo_setup()
 mic = SmartMic()
-
 SmartSpeaker.beep()
+
 try:
-        
     while True:
 
         text = mic.listen_and_interpret()
@@ -32,7 +30,7 @@ try:
         conversation_manager.save()
 
 except Exception as e:
-    print_error(f"Something went wrong, closing. Error: {e}")
+    error_handling(e)
 
 conversation_manager.save(closing=True)
 print_bold("\nGoodbye!\n")

@@ -101,7 +101,7 @@ class ChatGPT:
 
 
             
-            second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5)
+            second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=False)
             return second_response
 
     
@@ -115,4 +115,6 @@ if __name__ == "__main__":
         # {"role": "user", "content" : "based on what we've talked about earlier, what is your favorite pet"}
         # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
+    from ConversationManager import set_global_conversation_manager
+    set_global_conversation_manager().conversation = conversation_history
     print(ChatGPT.smart_prompt(conversation_history, silent=False))

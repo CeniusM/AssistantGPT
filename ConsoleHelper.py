@@ -43,3 +43,23 @@ def print_warning(msg: str):
 def print_bold(msg: str):
     color(ConsoleColor.UNDERLINE)
     print_checked(msg)
+
+
+def error_handling(exception): # take in an exception and print its corresponding message
+    #check exception as a string
+    if "FileNotFoundError" in str(exception):
+        print_error("File not found")
+    elif "PermissionError" in str(exception):
+        print_error("Permission denied")
+    elif "sr.WaitTimeoutError" in str(exception):
+        print_error("Listening timed out, no speech detected.")
+    elif "sr.UnknownValueError" in str(exception):
+        print_error("Speech Recognition could not understand audio")
+    elif "sr.RequestError" in str(exception):
+        print_error("Could not request results from Google Speech Recognition service")
+    elif "OSError" in str(exception):
+        print_error("Error: Microphone not found. Please check your microphone connection.")
+    elif "TypeError" in str(exception):
+        print_error("Error: TypeError")
+    else:
+        print_error("An unknown error occurred", str(exception))

@@ -23,7 +23,7 @@ class SmartSpeaker:
     def beep(Hz=440, milliseconds=500):
         winsound.Beep(Hz, milliseconds) # Beep to let you know it reset # Hz , milliseconds
 
-    def generate_speech(text, lang, male = True):
+    def generate_speech(text, language_response="en-US", male = True):
 
         # Imports the Google Cloud client library
         os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "Keys\\google_key.json"
@@ -34,8 +34,6 @@ class SmartSpeaker:
         # Set the text input to be synthesized
         synthesis_input = texttospeech.SynthesisInput(text=text)
 
-        #Set the language of the response
-        language_response = get_text_language(text)
 
         # Build the voice request, select the language with get_text_language and the ssml_gender
         # voice name depending on language and male boolean
@@ -73,7 +71,7 @@ class SmartSpeaker:
     def play_voice(text):
         lang = get_text_language(text)
         
-        audio_content = SmartSpeaker.generate_speech(text, lang)
+        audio_content = SmartSpeaker.generate_speech(text=text, language_response=lang)
 
         audio_path = "Audiofiles\\tempAudio.wav"
 

@@ -12,5 +12,9 @@ def get_EL_key():
 def get_DMI_key():
     return load_keys()["DMI_KEY"]
 
+def get_WEB_key():
+    web_key = load_keys()["WEB_KEY"]
+    return web_key["api_key"], web_key["engine_ID"]
+
 def load_audio():
     pass

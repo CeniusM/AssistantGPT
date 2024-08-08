@@ -54,6 +54,9 @@ class ConversationManager:
         header = convo.pop(0)  # Remove the first element (header)
         convo.insert(len(convo) - 1, header)  # Insert the header before the last element
         
+        while len(str(convo)) > 75000:
+            convo.pop(0)  # Remove the first element if the total length exceeds 32770 characters
+
         return convo  # Return the modified list
 
     def add_and_get(self, role, content):
@@ -66,13 +69,17 @@ class ConversationManager:
 
         if closing:
 
-            summary_conversation = self.conversation.copy()
-            summary = ConversationManager.create_summary(summary_conversation)
+            try:
+                summary_conversation = self.conversation.copy()
+                summary = ConversationManager.create_summary(summary_conversation)
+            except:
+                summary = None
 
             #adds on the prize and the date and time at the end of the json file
             self.conversation.append({"role": "Time Tracker", "Time and day": f"{time.asctime(time.localtime(time.time()))}"})
             self.conversation.append({"role": "Money Tracker", "Total Cost": f"{ChatGPT.total_cost}$"})
-            self.conversation.append({"role": "summary", "content": f"{summary}"})
+            if summary != None:
+                self.conversation.append({"role": "summary", "content": f"{summary}"})
         
         write_json_file(path, self.conversation)
 
