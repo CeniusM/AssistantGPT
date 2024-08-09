@@ -12,37 +12,33 @@ def get_available_tools():
     # then it has a description defined in ToolDescriptions.py
     # there we define the parameters and further descriptions
     #
-    # tools also takes care of formatting the arguments given by the ai
-    #
-    # Here we just call the function
-    # lambda args: Func
-    #
-    # Here we call the function with some args, and where they are parsed
-    # lambda args: Func(args)
-    # lambda args: Func(args.get("some query"))
-    #
-    # And here we give a predifined response
-    # lambda args: (Func, "Some predifined stuff")[1]
+    # tools also defines some formatting of the arguments given by the ai
     tools = {
         "get_weather_forecast": {
             "description": get_weather_forecast_description(),
-            "function": lambda args: DMI.create_response(args)
+            "function": DMI.create_response,
+            "use_args": True,
         },
         
         "adjust_microphone": {
             "description": adjust_microphone_description(),
             # Do not need to call adjust microphone on the SmartMic since it does that after initializing
-            "function": lambda args: (SmartMic(), "Microphone adjusted")[1]
+            "function": lambda: SmartMic(),
+            "use_args": False,
+            "response": "Microphone adjusted"
         },
         
         "look_through_memory": {
             "description": look_through_memory_description(),
-            "function": lambda args: Memory.create_response
+            "function": Memory.create_response,
+            "use_args": False,
         },
         
         "web_search": {
             "description": web_search_description(),
-            "function": lambda args: WebSearch.create_response(args.get("search_query"))
+            "function": WebSearch.create_response,
+            "use_args": True,
+            "get": "search_query"
         }
     }
     

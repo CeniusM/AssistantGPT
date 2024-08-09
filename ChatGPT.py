@@ -68,16 +68,24 @@ class ChatGPT:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
+            tool = available_tools[tool_name]
 
-            function_response = available_tools[tool_name]["function"](tool_args)
+            # Use get on args if defined by tool
+            tool_args = tool_args if "get" not in tool.keys() else tool_args.get(tool["get"])
+
+            # Call the tools function with arguments if defined by tool
+            tool_response = tool["function"](tool_args) if tool["use_args"] else tool["function"]()
+
+            # If tool has predefined response, we just return that
+            tool_response = tool_response if "response" not in tool.keys() else tool["response"]
             
-            # extend conversation with function response
+            # extend conversation with tool response
             conversation_history.append(
                 {
                     "tool_call_id": tool_call.id,
                     "role": "tool",
                     "name": tool_name,
-                    "content": function_response,
+                    "content": tool_response,
                 }
             )
         
