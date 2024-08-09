@@ -4,6 +4,7 @@ from Memory import *
 from WebSearch import *
 from SmartMic import *
 from Tooling.ToolDescriptions import *
+from NoteTool import *
 
 # Returns a dict of the avalible tools. It include the names, tool description and function to be called
 def get_available_tools():
@@ -39,7 +40,13 @@ def get_available_tools():
             "function": WebSearch.create_response,
             "use_args": True,
             "get": "search_query"
-        }
+        },
+
+        "make_note": {
+            "description": NoteTools.make_note_description(),
+            "function": NoteTools.make_note,
+            "use_args": True,
+        },
     }
     
     return tools
