@@ -16,6 +16,7 @@ LogEnabled = True
 def print_checked(msg):
     if LogEnabled is True:
         print(msg)
+    color(ConsoleColor.RESET)
 
 def color(col: str):
     if LogEnabled is True:
@@ -45,7 +46,7 @@ def print_bold(msg: str):
     print_checked(msg)
 
 
-def error_handling(exception): # take in an exception and print its corresponding message
+def error_handling(exception: Exception): # take in an exception and print its corresponding message
     #check exception as a string
     if "FileNotFoundError" in str(exception):
         print_error("File not found")
@@ -62,4 +63,6 @@ def error_handling(exception): # take in an exception and print its correspondin
     elif "TypeError" in str(exception):
         print_error("Error: TypeError")
     else:
-        print_error("An unknown error occurred", str(exception))
+        print_error("An unknown error occurred")
+    
+    print_warning("Error msg: " + str(exception))
