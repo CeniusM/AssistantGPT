@@ -19,17 +19,17 @@ def get_weather_forecast_description():
 
     getWeather["time_of_day"] = int, "witch hour on the day, the interval starts, e.g. this evening would be '17'"
 
-    return getWeather.to_json()
+    return getWeather
 
 def adjust_microphone_description():
-    return ToolDescription("adjust_microphone", "Adjust the microphone for background noise").to_json()
+    return ToolDescription("adjust_microphone", "Adjust the microphone for background noise")
 
 def look_through_memory_description():
-    return ToolDescription("look_through_memory", "Adjust the microphone for background noise").to_json()
+    return ToolDescription("look_through_memory", "Can look through earlier conversations. Oftenly activatet with phrases like: 'based on what we talked about' or 'do you remember?'. ")
 
 def web_search_description():
     webSearch = ToolDescription("web_search", "Use a web query to get wanted information")
 
     webSearch["search_query", True] = str, "The search query that can be used for a google search, e.g. 'birth rate denmark'"
 
-    return webSearch.to_json()
+    return webSearch

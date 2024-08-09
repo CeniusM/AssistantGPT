@@ -1,7 +1,9 @@
-from ConsoleHelper import *
-from KeyManager import *
 import openai
 
+from ConsoleHelper import *
+from KeyManager import *
+
+from ToolManager import get_available_tools
 
 class ChatGPT:    
 
@@ -27,10 +29,11 @@ class ChatGPT:
 
 
     def smart_prompt(conversation_history, temperature=0.5, silent=False):
-
-
         openai.api_key = get_GPT_key()
+
         tools = read_json_file("Tools.json")
+        available_tools = get_available_tools()
+
 
         completion = openai.chat.completions.create(
                 model = "gpt-3.5-turbo-0125",
@@ -59,47 +62,33 @@ class ChatGPT:
             return response
         
         else:
-            from ToolManager import get_weather, look_through_memory, web_search, adjust_mic
-            # from DMI import create_response
-            # from Memory import create_response
-            # from WebSearch import create_response
-            # from SmartMic import adjust_for_ambient_noise
-            # call the function   Note: the JSON response may not always be valid; be sure to handle errors
-            available_functions = {
-                "get_weather_forecast" : get_weather,
-                "look_through_memory" : look_through_memory,
-                "web_search" : web_search,
-                "adjust_microphone" : adjust_mic
-            }
-
             conversation_history.append(completion.choices[0].message)  # extend conversation with assistant's reply    ¯\_(ツ)_/¯
             
             # send the info for each function call and function response to the model
             for tool_call in tool_calls:
-                function_name = tool_call.function.name
-                function_args = json.loads(tool_call.function.arguments)
-                function_to_call = available_functions[function_name]
+                tool_name = tool_call.function.name
+                tool_args = json.loads(tool_call.function.arguments)
 
-                if function_name == "get_weather_forecast":
-                    function_response = function_to_call(GPT_parameters = function_args)
-                elif function_name == "look_through_memory":
-                    function_response = function_to_call()
-                elif function_name == "web_search":
-                    function_response = function_to_call(search_query = function_args.get("search_query"))                 
-                elif function_name == "adjust_microphone": #if no input or output is needed
-                    function_to_call()
+                tool = available_tools[tool_name]
+
+                # Edge cases for the function args
+                if tool_name == "web_search":
+                    tool_args = tool_args.get("search_query")
+
+                function_response = tool["function"](tool_args)
+
+                # Edge cases for the function response
+                if tool_name == "adjust_microphone":
                     function_response = "Microphone adjusted"
                 
                 conversation_history.append(
                     {
                         "tool_call_id": tool_call.id,
                         "role": "tool",
-                        "name": function_name,
+                        "name": tool_name,
                         "content": function_response,
                     }
                 )  # extend conversation with function response
-
-
             
             second_response = ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=False)
             return second_response
