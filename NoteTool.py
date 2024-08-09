@@ -27,8 +27,8 @@ class NoteTools:
         
         # Create the full path for the new note
         file_path = join_paths(NOTES_DIR, f"{title}.txt")
-        # file_path = os.path.join(NOTES_DIR, f"{title}.txt")
 
+        # If the file allready exists, we return aan error message
         if path_exists(file_path):
             return "Failed: Note with the given title already exists."
         
