@@ -1,4 +1,5 @@
 import json
+import os
 
 def read_text_file(path):
     try:
@@ -28,3 +29,12 @@ def write_json_file(path, content):
         print(f"Error: An I/O error occurred while writing JSON to the file at {path}.")
     except Exception as e:
         print(f"Error occurred in FileManager with write_json_file : {e}")
+
+def path_exists(path):
+    return os.path.exists(path)
+
+def create_dir(path):
+    return os.makedirs(path)
+
+def join_paths(root, paths):
+    return os.path.join(root, paths)
