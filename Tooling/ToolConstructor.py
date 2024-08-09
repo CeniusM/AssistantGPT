@@ -44,10 +44,12 @@ class ToolDescription:
         func = {"name": self.name, "description": self.description}
 
         if len(self.parameters) != 0:
-            params = {"type": "object", "properties": self.parameters}
+            params = {"type": "object" }
 
             if self.params_description != "":
                 params["description"] = self.params_description
+
+            params["properties"] = self.parameters
 
             if len(self.required) != 0:
                 params["required"] = self.required
