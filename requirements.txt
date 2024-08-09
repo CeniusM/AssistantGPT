@@ -1,3 +1,7 @@
-openai==1.35.7
+matplotlib==3.8.2
+openai==1.40.2
+protobuf==5.27.3
 pygame==2.6.0
+Requests==2.32.3
 SpeechRecognition==3.10.4
+varname==0.13.3
