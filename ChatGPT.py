@@ -38,7 +38,9 @@ class ChatGPT:
         tool_calls = message.tool_calls
 
         if response and not silent:
-            print_bold(f"\n{response}\n")
+            color(ConsoleColor.BOLD)
+            color(ConsoleColor.OKCYAN)
+            print_checked(f"\n{response}\n")
 
         # If no tools were given, we just return the response
         if not tools_json:
