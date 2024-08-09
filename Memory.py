@@ -42,6 +42,7 @@ class Memory:
         return all_summaries_dict
 
     def create_conv_numbers(all_summaries_dict):
+        from ChatGPT import ChatGPT
         #create the wanted search info using chatGPT
         conv_numbers_convo = ConversationManager(promptname="conv_numbers.txt").api_convo_setup(api_data=all_summaries_dict)
         conv_numbers = ChatGPT.prompt(conv_numbers_convo)
@@ -94,6 +95,7 @@ class Memory:
         return conv_data
 
     def search_through_conversations(conv_data):
+        from ChatGPT import ChatGPT
         #use the conversation data to and ChatGPT to search through the conversations
         search_convo = ConversationManager(promptname="search_in_convos.txt").api_convo_setup(api_data=conv_data)
         search_info = ChatGPT.prompt(search_convo)
