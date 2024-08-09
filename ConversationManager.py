@@ -1,7 +1,6 @@
 import os
 import time
 from FileManager import *
-from ChatGPT import *
 
 def set_global_conversation_manager():
     global conversation_manager
@@ -65,6 +64,7 @@ class ConversationManager:
 
 
     def save(self, closing=False):
+        from ChatGPT import ChatGPT
         path = self.conversation_name
 
         if closing:
@@ -84,6 +84,7 @@ class ConversationManager:
         write_json_file(path, self.conversation)
 
     def create_summary(summary_conversation):
+        from ChatGPT import ChatGPT
     #Make the summarytext from the summary_conversation
         summary_conversation.pop(0)
         summary_conversation.append({"role": "system", "content":"make a super breaf summary of what this converation was about, ignore time and money modules if any. Include the discussed topic points. Use at max 1-2 short sentences"})
