@@ -20,6 +20,7 @@ class WebSearch:
         return filtered_search_info
 
     def create_search_query(user_input):
+        from ChatGPT import ChatGPT
         search_query_convo = ConversationManager(promptname="search_query.txt").api_message_setup(user_input=user_input)
         return ChatGPT.prompt(search_query_convo)
 
@@ -58,6 +59,7 @@ class WebSearch:
 
     def filter_search_info(formatted_results):
         filter_search_convo = ConversationManager(promptname="filter_search.txt").api_convo_setup(api_data=formatted_results)
+        from ChatGPT import ChatGPT
         return ChatGPT.prompt(filter_search_convo)
 
 if __name__ == "__main__":
