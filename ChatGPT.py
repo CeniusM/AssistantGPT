@@ -78,6 +78,9 @@ class ChatGPT:
 
             # If tool has predefined response, we just return that
             tool_response = tool_response if "response" not in tool.keys() else tool["response"]
+
+            # Some error checking
+            if not tool_response: raise Exception("The tool must give a response")
             
             # extend conversation with tool response
             conversation_history.append(
