@@ -58,7 +58,6 @@ class ChatGPT:
                                         conversation_history=conversation_history,
                                         temperature=temperature,
                                         silent=silent,
-                                        # Just ignore this line for now :)
                                         tools_json=tools_json,
                                         tool_choice="auto"
                                     )
