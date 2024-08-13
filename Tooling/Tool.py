@@ -1,4 +1,4 @@
-from NewTooling.ToolArg import *
+from Tooling.ToolArg import *
 import json
 
 # Defines a Tool
@@ -16,11 +16,13 @@ class Tool:
     def __init__(
             self, 
             name: str, 
-            description: str,
-            args_description: str,
-            args: list[ToolArg],
-            function_call: function,
-            default_response: str = None
+            function_call,
+            description: str = "",
+            args_description: str = "",
+            args: list[ToolArg] = [],
+            default_response: str = None,
+            # If set to a string, the users input will be appended
+            user_input = None
         ):
         self.name = name
         self.description = description
@@ -31,20 +33,24 @@ class Tool:
 
     def call(self, given_args: dict):
         # parse args
-        for key, value in self.args:
+        for arg in self.args:
 
             # If no argument was given corresponding to the defined argument.
             # Replace it with the default
-            if not key in given_args:
+            if not arg.name in given_args or given_args[arg.name] == None:
 
                 # If the argument was required, we raise an exception
-                if value.is_required:
+                if arg.is_required:
                     raise Exception("No value given for required argument")
 
-                given_args[key] = value.value
-
-        # Call tool function with parsed arguments
-        response = self.function_call(given_args)
+                given_args[arg.name] = arg.value
+        
+        if not self.args:
+            # Remove args if the tool have not defined any
+            response = self.function_call()
+        else:
+            # Call tool function with parsed arguments
+            response = self.function_call(given_args)
         
         # If the tool has a default reponse we return that
         if self.default_response:
@@ -65,7 +71,12 @@ class Tool:
             if self.args_description != "":
                 params["description"] = self.args_description
 
-            params["properties"] = self.args
+
+            if self.args and len(self.args) != 0:
+                params["properties"] = { }
+
+                for a in self.args:
+                    params["properties"][a.name] = a.__dict__() 
 
             required = [arg.name for arg in self.args if arg.is_required]
 
