@@ -7,8 +7,8 @@ from ConversationManager import *
 from ConversationTools import *
 from TextChecker import *
 
-conversation_manager = set_global_conversation_manager()
-conversation_manager.convo_setup()
+conversation = set_global_conversation_manager()
+conversation.convo_setup()
 mic = SmartMic()
 SmartSpeaker.beep()
 
@@ -19,18 +19,18 @@ try:
 
         if check_text_for_exit(text): break
         
-        conversation_formatted = conversation_manager.add_and_get("user", text)
+        conversation.message(USER, text)
 
-        response = ChatGPT.smart_prompt(conversation_formatted)
+        response = ChatGPT.smart_prompt(conversation.formatted())
 
         SmartSpeaker.play_voice(response)
 
-        conversation_manager.add_paragraph("assistant", response)
+        conversation.message(AGENT, response)
 
-        conversation_manager.save()
+        conversation.save()
 
 except Exception as e:
     error_handling(e)
 
-conversation_manager.save(closing=True)
+conversation.save(closing=True)
 print_bold("\nGoodbye!\n")
