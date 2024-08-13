@@ -4,19 +4,10 @@
 # Delete note
 
 from FileManager import *
-from Tooling.ToolConstructor import *
 
 NOTES_DIR = "Notes"
 
 class NoteTools:
-    def make_note_description():
-        des = ToolDescription("make_note", "Makes a note with a title and some contents. The tool will return Succes, then title and content, or Failed with an error message if the note title allready exsists")
-
-        des["title", True] = str
-        des["content", True] = str
-
-        return des
-
     def make_note(gpt_args):
         title = gpt_args["title"]
         content = gpt_args["content"]
