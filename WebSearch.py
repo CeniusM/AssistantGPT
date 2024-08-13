@@ -5,12 +5,16 @@ import requests
 
 class WebSearch:
     
-    def create_response(user_input=None, search_query=None):
+    def create_response(gpt_args):
+        # I do not understand where the user_input came from? It was never acually given the to function?
+        
         print_bold("Searching the web.")
+        
+        search_query = gpt_args["search_query"]
 
         # Get search results
-        if search_query is None:   
-            search_query = WebSearch.create_search_query(user_input)
+        if search_query is None:
+            search_query = WebSearch.create_search_query(gpt_args["USER_INPUT"])
         dependencies = WebSearch.create_dependencies(search_query)
         search_results = WebSearch.perform_search(dependencies)
 

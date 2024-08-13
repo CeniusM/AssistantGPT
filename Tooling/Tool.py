@@ -20,9 +20,7 @@ class Tool:
             description: str = "",
             args_description: str = "",
             args: list[ToolArg] = [],
-            default_response: str = None,
-            # If set to a string, the users input will be appended
-            user_input = None
+            default_response: str = None
         ):
         self.name = name
         self.description = description

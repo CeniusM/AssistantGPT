@@ -2,7 +2,7 @@ import openai
 
 from ConsoleHelper import *
 from KeyManager import *
-from ToolManager import get_available_tools, get_available_tools_json
+from ToolManager import get_available_tools
 
 class ChatGPT:
     total_cost = 0
@@ -49,16 +49,19 @@ class ChatGPT:
             return response, tool_calls, message
 
     def smart_prompt(conversation_history, temperature=0.5, silent=False):
-        available_tools =   get_available_tools()
-        tools_json =        get_available_tools_json()
+
+        # Note. This could be a parameter, then when calling the smart prompt,
+        # the GPT agent could have acces to diffrent tools, and thereby specialising the agents 
+        available_tools = get_available_tools()
         
         response, tool_calls, message = ChatGPT.prompt(
                                         conversation_history=conversation_history,
                                         temperature=temperature,
                                         silent=silent,
-                                        tools_json=tools_json,
+                                        # Just ignore this line for now :)
+                                        tools_json=json.loads(f"[{str.join(", ", [a.__dict__() for a in available_tools])}]"),
                                         tool_choice="auto"
-                                        )
+                                    )
         
         # check if the model wanted to call a function, if not, return
         if not tool_calls:
@@ -70,19 +73,21 @@ class ChatGPT:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
-            tool = available_tools[tool_name]
+            tool = [t for t in available_tools if t.name == tool_name]
 
-            # Use get on args if defined by tool
-            tool_args = tool_args if "get" not in tool.keys() else tool_args.get(tool["get"])
+            if len(tool) != 1:
+                raise Exception("Tool not found")
+            
+            # Set reserved arguments
+            tool_args["CONVERSATION"] = conversation_history
+            tool_args["USER_INPUT"] = conversation_history[-1]["content"]
 
-            # Call the tools function with arguments if defined by tool
-            tool_response = tool["function"](tool_args) if tool["use_args"] else tool["function"]()
-
-            # If tool has predefined response, we just return that
-            tool_response = tool_response if "response" not in tool.keys() else tool["response"]
+            # Call the tools function with GPT arguments
+            tool_response = tool[0].call(tool_args)
 
             # Some error checking
-            if not tool_response: raise Exception("The tool must give a response")
+            if not tool_response: 
+                raise Exception("The tool must give a response")
             
             # extend conversation with tool response
             conversation_history.append(
