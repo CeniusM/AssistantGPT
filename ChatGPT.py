@@ -52,14 +52,14 @@ class ChatGPT:
 
         # Note. This could be a parameter, then when calling the smart prompt,
         # the GPT agent could have acces to diffrent tools, and thereby specialising the agents 
-        available_tools = get_available_tools()
+        available_tools, tools_json = get_available_tools()
         
         response, tool_calls, message = ChatGPT.prompt(
                                         conversation_history=conversation_history,
                                         temperature=temperature,
                                         silent=silent,
                                         # Just ignore this line for now :)
-                                        tools_json=json.loads(f"[{str.join(", ", [a.__dict__() for a in available_tools])}]"),
+                                        tools_json=tools_json,
                                         tool_choice="auto"
                                     )
         
