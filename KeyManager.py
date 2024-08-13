@@ -16,5 +16,8 @@ def get_WEB_key():
     web_key = load_keys()["WEB_KEY"]
     return web_key["api_key"], web_key["engine_ID"]
 
+def get_location_key():
+    return load_keys()["LOCATION_KEY"]
+
 def load_audio():
     pass

@@ -71,16 +71,26 @@ class DMI:
     def get_current_location():
         # Get the location of the user, using the ip-api to get the location of the user
         response = requests.get("http://ip-api.com/json") #("https://api.ipgeolocation.io/ipgeo?apiKey=API_KEY", "https://ipapi.co/json/", "https://ipinfo.io/json", "https://freegeoip.app/json/")
-        city = response.json()["city"]
-        accurate_location = response.json()["lon"], response.json()["lat"]
-        return {"city": city, "accurate_location": accurate_location}
+        #city = response.json()["city"]
+        lat, lon = response.json()["lat"], response.json()["lon"]
+        return lat, lon
     
     def get_location_points(city=None):
-        if city == None:
-            return DMI.get_current_location()["accurate_location"]
 
-        #get long and latt from city name ()
-        return DMI.get_current_location()["accurate_location"]
+        city = "paris" #for testing
+        if city == None:
+            return DMI.get_current_location()
+
+        api_url = 'https://api.api-ninjas.com/v1/geocoding?city={}'.format(city)
+        api_key = get_location_key()
+        response = requests.get(api_url, headers={'X-Api-Key': api_key})
+        lat = response.json()[0]["latitude"]
+        lon = response.json()[0]["longitude"]
+
+        if response.status_code == requests.codes.ok:
+            return lat, lon
+        else:
+            print("Error:", response.status_code, response.text)
     
 
     def get_time_interval(times):        
@@ -179,10 +189,12 @@ class DMI:
         tech_parameters = [parameter_map[param] for param in parameters]
         tech_parameters = ",".join(tech_parameters)
 
+        lat, lon = location_points
+
         api_key = get_DMI_key()      
 
         dependencies = {        
-            "coords": f"POINT({location_points[0]} {location_points[1]})",
+            "coords": f"POINT({lon} {lat})",
             "crs": "crs84",
             "parameter-name": f"{tech_parameters}",
             "datetime": f"{start_time}/{end_time}",

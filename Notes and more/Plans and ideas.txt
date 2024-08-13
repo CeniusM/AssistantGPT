@@ -19,6 +19,7 @@ Connect to phone via app or website, or maybe google assistant.
 Load data (personal profile)
 location for DMI
 Smart-gpt  use multithreating for a faster response -audible response
+Facebook interface med messenger besked og opkald.
 
 ## Doing
 
