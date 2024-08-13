@@ -19,13 +19,15 @@ class ToolDefinition:
             description: str,
             args_description: str,
             args: list[ToolArg],
-            function_call: function
+            function_call: function,
+            default_response: str = None
         ):
         self.name = name
         self.description = description
         self.args_description = args_description
         self.args = args
         self.function_call = function_call
+        self.default_response = default_response
 
     def call(self, given_args: dict):
         # parse args
@@ -42,7 +44,13 @@ class ToolDefinition:
                 given_args[key] = value.value
 
         # Call tool function with parsed arguments
-        self.function_call(given_args)
+        response = self.function_call(given_args)
+        
+        # If the tool has a default reponse we return that
+        if self.default_response:
+            response = self.default_response
+        
+        return response
     
     def __dict__(self):
         # Returns the tool as a formatted ChatGPT tool
