@@ -1,6 +1,9 @@
 ### Brainstorm
 
 ##small fixes
+Remove the TextChecker (Only uses the exit)
+Replace FileManager with FileUtil, ie. (read_json_fil for File.read_json, path_exists for Path.exists and so on)
+
 Change mic to not cut of sentence after 5 sec
 Improve system prompt
 Load conversations
