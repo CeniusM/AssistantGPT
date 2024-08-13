@@ -4,7 +4,7 @@ from FileManager import *
 
 def set_global_conversation_manager():
     global conversation
-    if 'conversation_manager' not in globals():
+    if 'conversation' not in globals():
         conversation = ConversationManager()
     return conversation
 
