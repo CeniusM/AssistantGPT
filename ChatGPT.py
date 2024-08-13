@@ -80,7 +80,7 @@ class ChatGPT:
             
             # Set reserved arguments
             tool_args["CONVERSATION"] = conversation_history
-            tool_args["USER_INPUT"] = conversation_history[-1]["content"]
+            tool_args["USER_INPUT"] = conversation_history[-2]["content"]
 
             # Call the tools function with GPT arguments
             tool_response = tool[0].call(tool_args)
