@@ -12,7 +12,7 @@ import json
 # If an argument has a default value, it will replace if it is not given
 #
 # It also takes care of formating correctly for ChatGPT
-class ToolDefinition:
+class Tool:
     def __init__(
             self, 
             name: str, 
