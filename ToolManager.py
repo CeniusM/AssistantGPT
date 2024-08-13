@@ -59,8 +59,7 @@ def get_available_tools():
                 ToolArg("Number", bool).default(True),
                 ToolArg("Day", int).default(200)
             ],
-            function_call = NoteTools.make_note,
-            user_input = ""
+            function_call = NoteTools.make_note
         )
     ]
     
