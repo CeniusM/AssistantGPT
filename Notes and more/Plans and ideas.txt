@@ -7,6 +7,7 @@ ConversationManager has a conversation_name which should rather be file_path
 Replace error_handling with save convo -> raise error, better for debuging
 Rename ConversationManager for Conversation? Easier to read and write with
 Move files to Helpers for cleaner root path. (ConsoleHelper, TextChecker, FileUtil)
+General code cleanup
 
 Change mic to not cut of sentence after 5 sec
 Improve system prompt
