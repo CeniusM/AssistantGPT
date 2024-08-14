@@ -1,27 +1,25 @@
 from Window import *
 from TextUtil import *
 import threading
+import json
 
 class GUI:
     def __init__(self) -> None:
         self.window = None
         self.users = {}
-        self.users_alias = {}
         self.messages = []
         self.run = False
+        self.scroll = 0.0
 
     # API
     def message(self, user, content):
         # Write to window
         self.messages.append({"user": user, "content": content})
 
-    def add_user_color(self, user, rgb):
+    def add_user(self, user, alias, rgb):
         # If a message is by a user with a color, its text will be colored acordingly
-        self.users[user] = rgb
-
-    def add_user_alias(self, user, alias):
         # The users name will be replaced with its alias
-        self.users_alias[user] = alias
+        self.users[user] = {"color": rgb, "alias": alias}
 
     def main_loop(self, width, height):
         self.window = Window(width, height)
@@ -34,29 +32,32 @@ class GUI:
                 if event.type == QUIT:
                     self.run=False
                     break
+                if event.type ==MOUSEWHEEL:
+                    self.scroll += event.y * 10
 
-            self.window.fill(Color(50,50,50))
+            self.window.fill(Color(40,40,40))
             
             # Render the messages
             default_color = Color(255,255,255)
-            text = GText(50)
+            text = GText(30)
             margine = 10
-            y = margine
+            y = margine + self.scroll
             for msg in self.messages:
-                user = msg["user"]
+                user_name = msg["user"]
                 content = msg["content"]
 
-                if user in self.users.keys():
-                    text.forground = self.users[user]
+                if user_name in self.users.keys():
+                    user = self.users[user_name]
+
+                    text.forground = user["color"]
+                    user_name = user["alias"] # last step!
                 else:
                     text.forground = default_color
 
-                # last step!
-                if user in self.users_alias.keys():
-                    user = self.users_alias[user]
-
-                y, _, _ = TextUtil.write(self.window, text.write(f"-{user}-"), (margine, y), -margine*2)
+                y, _, _ = TextUtil.write(self.window, text.write(user_name), (margine, y), -margine*2)
+                y += text.size / 4
                 y, _, _ = TextUtil.write(self.window, text.write(content), (margine * 2, y), -margine*2)
+                y += text.size
 
 
 
@@ -81,12 +82,18 @@ class GUI:
         return gui, thread
 
 if __name__ == "__main__":
-    gui, thread = GUI.start_async_window(500, 500)
+    with open("Graphics\convo.json", "r") as file:
+        convo = json.loads(file.read())
 
-    gui.add_user_alias("assistant", "ChatGPT")
-    gui.add_user_color("assistant", (110, 250, 200))
+    gui, thread = GUI.start_async_window(800, 600)
 
-    gui.message("assistant", "yoyo, i just wanna say python is real")
+    gui.add_user("assistant", "ChatGPT", (50, 250, 230))
+    gui.add_user("system", "SYS", (200, 100, 0))
+    gui.add_user("user", "You", (250, 250, 250))
+
+    for m in convo:
+        gui.message(m["role"], m["content"])
+
 
     thread.join()
 
