@@ -59,7 +59,7 @@ class CodeGenerator:
         while len(comments_added) < max_comments and not CodeGenerator.stop_commenting:
             CodeGenerator.comment = None
 
-            code_prompt = [{"role":"user", "content": "Code:\n\r"+"\n\r".join(code_lines)}]
+            code_prompt = [{"role":"user", "content": "\n\r".join(code_lines)}]
             comment_list_prompts = [{"role": "assistant", "content": "line added at " + str(a)} for a in comments_added]
 
             comment_model.prompt(comment_list_prompts + code_prompt, ignore_response=True)
