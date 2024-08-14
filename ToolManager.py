@@ -55,9 +55,7 @@ def get_available_tools():
             args_description = "Here are some arguments",
             args = [
                 ToolArg("title").required(),
-                ToolArg("content").required(),
-                ToolArg("Number", bool).default(True),
-                ToolArg("Day", int).default(200)
+                ToolArg("content").required()
             ],
             function_call = NoteTools.make_note
         )
