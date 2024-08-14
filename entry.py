@@ -7,6 +7,7 @@ from ConversationManager import *
 from ConversationTools import *
 from TextChecker import *
 from Graphics.GUI import *
+from ToolManager import get_available_tools
 
 # Set up GUI
 gui, thread = GUI.start_async_window(800, 600)
@@ -36,7 +37,7 @@ try:
 
         # Generate GPT response
         gui.clear_color = Thinking
-        response = ChatGPT.smart_prompt(conversation_formatted)
+        response = ChatGPT.smart_prompt(conversation_formatted, get_available_tools())
 
         # Play response
         gui.clear_color = Responding

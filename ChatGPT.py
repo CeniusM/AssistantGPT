@@ -2,7 +2,6 @@ import openai
 
 from ConsoleHelper import *
 from KeyManager import *
-from ToolManager import get_available_tools
 
 class ChatGPT:
     total_cost = 0
@@ -48,17 +47,17 @@ class ChatGPT:
         else:
             return response, tool_calls, message
 
-    def smart_prompt(conversation_history, temperature=0.5, silent=False):
+    def smart_prompt(conversation_history, tools=None, temperature=0.5, silent=False):
 
         # Note. This could be a parameter, then when calling the smart prompt,
         # the GPT agent could have acces to diffrent tools, and thereby specialising the agents 
-        available_tools, tools_json = get_available_tools()
+        # available_tools, tools_json = get_available_tools()
         
         response, tool_calls, message = ChatGPT.prompt(
                                         conversation_history=conversation_history,
                                         temperature=temperature,
                                         silent=silent,
-                                        tools_json=tools_json,
+                                        tools_json=[a.__dict__() for a in tools],
                                         tool_choice="auto"
                                     )
         
@@ -72,7 +71,7 @@ class ChatGPT:
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
-            tool = [t for t in available_tools if t.name == tool_name]
+            tool = [t for t in tools if t.name == tool_name]
 
             if len(tool) != 1:
                 raise Exception("Tool not found")
@@ -113,5 +112,6 @@ if __name__ == "__main__":
         # {"role": "user", "content" : "search the web to figure out how old dolphins can get"}
     ]
     from ConversationManager import set_global_conversation_manager
+    from ToolManager import get_available_tools
     set_global_conversation_manager().conversation = conversation_history
-    print(ChatGPT.smart_prompt(conversation_history, silent=False))
+    print(ChatGPT.smart_prompt(conversation_history, tools=get_available_tools(), silent=False))
