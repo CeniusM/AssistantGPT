@@ -82,35 +82,23 @@ class GUI:
 
         return gui, thread
 
-if __name__ == "__main__":
-    with open("Graphics\convo.json", "r") as file:
-        convo = json.loads(file.read())
+# if __name__ == "__main__":
+#     with open("Graphics\convo.json", "r") as file:
+#         convo = json.loads(file.read())
 
-    gui, thread = GUI.start_async_window(800, 600)
+#     gui, thread = GUI.start_async_window(800, 600)
 
-    gui.add_user("assistant", "ChatGPT", (50, 200, 150))
-    gui.add_user("system", "SYS", (200, 100, 0))
-    gui.add_user("user", "You", (250, 250, 250))
-    gui.add_user("summary", "Summary", (50, 100, 200))
-    gui.add_user("DEBUG", None, (200, 50, 150))
+#     gui.add_user("assistant", "ChatGPT", (50, 200, 150))
+#     gui.add_user("system", "SYS", (200, 100, 0))
+#     gui.add_user("user", "You", (250, 250, 250))
+#     gui.add_user("summary", "Summary", (50, 100, 200))
+#     gui.add_user("DEBUG", None, (200, 50, 150))
 
-    for m in convo:
-        gui.message(m["role"], m["content"])
+#     for m in convo:
+#         gui.message(m["role"], m["content"])
 
-    gui.message("DEBUG", "Could not get name")
+#     gui.message("DEBUG", "Could not get name")
 
-    thread.join()
+#     thread.join()
 
-    print("Exit")
-
-
-
-# wind.fill(Color(50, 50, 50))
-# msg = "The conversation topics such as weather in different countries, dolphin facts, and the size off ant colonies."
-# margine = 10
-
-# wind.draw_box(margine, margine, wind.size.w - margine * 2, 3*50, Color(100,50,200))
-
-# TextUtil.write(wind, msg, Color(100, 200, 100), (margine- 1000,margine- 1000), 30, -margine*2)
-
-# wind.render_present()
+#     print("Exit")
