@@ -91,6 +91,8 @@ if __name__ == "__main__":
     gui.add_user("system", "SYS", (200, 100, 0))
     gui.add_user("user", "You", (250, 250, 250))
 
+    gui.message("Some user", "A \nI just wanna say hi")
+
     for m in convo:
         gui.message(m["role"], m["content"])
 

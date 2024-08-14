@@ -48,8 +48,14 @@ class TextUtil:
         color = g_text.forground
         back_color = g_text.background
 
-        # Variables to control text rendering
-        words = text.split(' ')
+        words = []
+        # Gotta replace the \n
+        temp_words = text.split(' ')
+        for word in temp_words:
+            splits = word.split("\n")
+            splits = ["\n" if w == "" else w for w in splits]
+            words += splits
+
         space_width = font.size(' ')[0]
         x, y = position
         max_lines = max_lines if max_lines > 0 else float('inf')
@@ -63,6 +69,11 @@ class TextUtil:
 
             while len(words) != 0:
                 next_word = words[0]
+
+                if next_word == "\n":
+                    words.pop(0)
+                    break
+
                 word_width = font.size(next_word)[0]
                 new_width = line_width + word_width + space_width
 
