@@ -1,5 +1,5 @@
-from Window import *
-from TextUtil import *
+from Graphics.Window import *
+from Graphics.TextUtil import *
 import threading
 import json
 
@@ -8,8 +8,9 @@ class GUI:
         self.window = None
         self.users = {}
         self.messages = []
-        self.run = False
+        self.running = False
         self.scroll = 0.0
+        self.clear_color = Color(40,40,40)
 
     # API
     def message(self, user, content):
@@ -25,17 +26,17 @@ class GUI:
         self.window = Window(width, height)
         
         clock = pygame.time.Clock()
-        self.run = True
+        self.running = True
         dt = 0
-        while self.run: # main game loop
+        while self.running: # main game loop
             for event in self.window.get_events():
                 if event.type == QUIT:
-                    self.run=False
+                    self.running=False
                     break
                 if event.type ==MOUSEWHEEL:
                     self.scroll += event.y * 20
 
-            self.window.fill(Color(40,40,40))
+            self.window.fill(self.clear_color)
             
             # Render the messages
             default_color = Color(255,255,255)
@@ -71,7 +72,7 @@ class GUI:
         self.window = None
     
     def stop(self):
-        self.run = False
+        self.running = False
 
     @staticmethod
     def start_async_window(width, height):

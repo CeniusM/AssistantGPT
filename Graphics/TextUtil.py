@@ -1,4 +1,4 @@
-from Window import *
+from Graphics.Window import *
 
 # Graphics text with options
 class GText:
