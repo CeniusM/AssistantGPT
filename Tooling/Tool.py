@@ -85,4 +85,4 @@ class Tool:
 
         root = {"type": "function", "function": func}
 
-        return json.dumps(root)
+        return root

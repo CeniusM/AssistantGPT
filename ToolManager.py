@@ -61,4 +61,4 @@ def get_available_tools():
         )
     ]
     
-    return tools, json.loads(f"[{str.join(", ", [a.__dict__() for a in tools])}]")
+    return tools, [a.__dict__() for a in tools]
