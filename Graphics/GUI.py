@@ -50,7 +50,8 @@ class GUI:
                     user = self.users[user_name]
 
                     text.forground = user["color"]
-                    user_name = user["alias"] # last step!
+                    if user["alias"]:
+                        user_name = user["alias"] # last step!
                 else:
                     text.forground = default_color
 
@@ -91,9 +92,12 @@ if __name__ == "__main__":
     gui.add_user("system", "SYS", (200, 100, 0))
     gui.add_user("user", "You", (250, 250, 250))
     gui.add_user("summary", "Summary", (50, 100, 200))
+    gui.add_user("DEBUG", None, (200, 50, 150))
 
     for m in convo:
         gui.message(m["role"], m["content"])
+
+    gui.message("DEBUG", "Could not get name")
 
     thread.join()
 
