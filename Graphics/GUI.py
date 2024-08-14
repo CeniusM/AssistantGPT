@@ -33,7 +33,7 @@ class GUI:
                     self.run=False
                     break
                 if event.type ==MOUSEWHEEL:
-                    self.scroll += event.y * 10
+                    self.scroll += event.y * 20
 
             self.window.fill(Color(40,40,40))
             
@@ -87,15 +87,13 @@ if __name__ == "__main__":
 
     gui, thread = GUI.start_async_window(800, 600)
 
-    gui.add_user("assistant", "ChatGPT", (50, 250, 230))
+    gui.add_user("assistant", "ChatGPT", (50, 200, 150))
     gui.add_user("system", "SYS", (200, 100, 0))
     gui.add_user("user", "You", (250, 250, 250))
-
-    gui.message("Some user", "A \nI just wanna say hi")
+    gui.add_user("summary", "Summary", (50, 100, 200))
 
     for m in convo:
         gui.message(m["role"], m["content"])
-
 
     thread.join()
 
