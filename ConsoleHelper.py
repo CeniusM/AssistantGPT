@@ -34,7 +34,7 @@ def print_error(msg: str):
     print_checked(msg)
 
 def print_info(msg: str):
-    color(ConsoleColor.RESET)
+    color(ConsoleColor.OKCYAN)
     print_checked(msg)
 
 def print_warning(msg: str):
