@@ -69,14 +69,13 @@ class Agent_GPT:
         message = completion.choices[0].message
         response = message.content
         tool_calls = message.tool_calls
-
-        # Return if no tools called
-        if AgentAction.TEXT:
-            return (response, None)
-        
         tools_called = []
+
+        # Return if no tools used
+        if self.agent_action is AgentAction.TEXT:
+            return (response, tools_called)
         
-        # Parse tool calls
+        # Parse tool calls if any
         for tool_call in tool_calls:
             tool_name = tool_call.function.name
             tool_args = json.loads(tool_call.function.arguments)
@@ -91,8 +90,6 @@ class Agent_GPT:
         
         return (response, tools_called)
         
-
-
 
 
 if __name__ == "__main__":
