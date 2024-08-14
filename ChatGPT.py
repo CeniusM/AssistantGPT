@@ -47,11 +47,9 @@ class ChatGPT:
         else:
             return response, tool_calls, message
 
-    def smart_prompt(conversation_history, tools=None, temperature=0.5, silent=False):
-
-        # Note. This could be a parameter, then when calling the smart prompt,
-        # the GPT agent could have acces to diffrent tools, and thereby specialising the agents 
-        # available_tools, tools_json = get_available_tools()
+    # Tool parameter so diffrent agents can have diffrent tools avalible
+    # Ignore response so we do not call the ChatGPT unnecessaryli and spend money and time if we dont even need the response
+    def smart_prompt(conversation_history, tools=None, temperature=0.5, silent=False, ignore_response=False):
         
         response, tool_calls, message = ChatGPT.prompt(
                                         conversation_history=conversation_history,
@@ -98,8 +96,11 @@ class ChatGPT:
                 }
             )
         
-        # return second response where GPT has acces to the tool call and response
-        return ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=silent)    
+        if ignore_response:
+            return "<no response>"
+        else:
+            # return second response where GPT has acces to the tool call and response
+            return ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=silent)    
 
 
 
