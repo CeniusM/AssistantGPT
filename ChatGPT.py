@@ -65,6 +65,7 @@ class ChatGPT:
         if not tool_calls:
            return response
         
+        user_input = conversation_history[0]["content"]
         conversation_history.append(message)  # extend conversation with assistant's reply    ¯\_(ツ)_/¯
 
         # Send the info for each function call and function response to the model
@@ -78,7 +79,7 @@ class ChatGPT:
             
             # Set reserved arguments
             tool_args["CONVERSATION"] = conversation_history
-            tool_args["USER_INPUT"] = conversation_history[-2]["content"]
+            tool_args["USER_INPUT"] = user_input
 
             # Call the tools function with GPT arguments
             tool_response = tool[0].call(tool_args)
