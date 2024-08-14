@@ -9,10 +9,10 @@ class Model:
         self.sys_prompt = sys_prompt
         self.tools = tools
     
-    def prompt(self, conv: list):
+    def prompt(self, conv: list, ignore_response=False):
         conv.insert(len(conv) - 1, { "role": "system", "content": self.sys_prompt })
 
-        return ChatGPT.smart_prompt(conv, self.tools, silent=True)
+        return ChatGPT.smart_prompt(conv, self.tools, silent=True, ignore_response=ignore_response)
 
 # Just an idea
 # But is trying to make an AI for generating and modifing code and commenting on code 
@@ -33,7 +33,7 @@ class CodeGenerator:
 
         comment_model = Model(
             # "You are given some code, and you add comments to explain the code by calling the add_comment tool, but only add comment if needed",
-            "Call the add_comment function if the code should have a comment added, otherwise call done. NEVER GIVE THE SAME COMMENT TWICE",
+            "add comment only if the code need a comment added, otherwise call done. NEVER GIVE THE SAME COMMENT TWICE",
             [Tool(
                 name="add_comment",
                 description="This tool should be called if more comments should be added",
@@ -59,20 +59,26 @@ class CodeGenerator:
         while len(comments_added) < max_comments and not CodeGenerator.stop_commenting:
             CodeGenerator.comment = None
 
-            response = comment_model.prompt([{"role":"user", "content": "\n\r".join(code_lines)}] + 
-            [{"role": "assistant", "content": "line added at " + str(a)} for a in comments_added])
+            code_prompt = [{"role":"user", "content": "Code:\n\r"+"\n\r".join(code_lines)}]
+            comment_list_prompts = [{"role": "assistant", "content": "line added at " + str(a)} for a in comments_added]
+
+            comment_model.prompt(comment_list_prompts + code_prompt, ignore_response=True)
+            
             comment = CodeGenerator.comment
 
             if not comment:
                 break
 
-            code_lines.insert(comment["line_number"], "#" + comment["comment_text"])
-            # code_lines.insert(comment["line_number"], str(code_lines[comment["line_number"]].count(" ") * " ") + "#" + comment["comment_text"])
+            line_number = comment["line_number"]
+            text = comment["comment_text"]
+
+            code_lines.insert(line_number - 1, "#" + text)
+            # code_lines.insert(line_number, str(code_lines[line_number].count(" ") * " ") + "#" + text)
 
 
-            print("Line " + str(comment["line_number"]) + ": " + comment["comment_text"])
+            print("Line " + str(line_number) + ": " + text)
             print("Reason:\n" + comment["reason"] + "\n")
-            comments_added.append(comment["line_number"])
+            comments_added.append(line_number)
 
         
         return "\n".join(code_lines)
