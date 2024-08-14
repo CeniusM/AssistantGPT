@@ -98,7 +98,7 @@ class ChatGPT:
             )
         
         # return second response where GPT has acces to the tool call and response
-        return ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=False)    
+        return ChatGPT.prompt(conversation_history=conversation_history, temperature=0.5, silent=silent)    
 
 
 
